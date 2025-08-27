@@ -135,7 +135,7 @@ export default function DashboardPage() {
         className="bg-white shadow-sm border-b border-slate-200"
         variants={itemVariants}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <motion.div 
               className="flex items-center space-x-3"
@@ -200,8 +200,8 @@ export default function DashboardPage() {
       </motion.header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
+      <main className="py-6 px-4 sm:px-6 lg:px-8">
+        <div className="py-6">
           {/* Welcome Section */}
           <motion.div 
             className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8"
