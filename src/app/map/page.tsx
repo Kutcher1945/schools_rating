@@ -98,7 +98,7 @@ export default function MapPage() {
                         <CardContent className="p-6">
                             <div className="flex gap-6 h-[700px]">
                             {/* Left Sidebar - Controls and Indicators */}
-                                <div className="flex flex-col gap-6 w-80 flex-shrink-0">
+                                <div className="flex flex-col gap-6 w-64 flex-shrink-0">
                                     <div className="space-y-3">
                                         <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Фильтры</h3>
                                         {/* <Button

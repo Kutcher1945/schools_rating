@@ -41,7 +41,7 @@ export function SidebarLayout({ children, className }: SidebarLayoutProps) {
       <main
         className={cn(
           "flex-1 transition-all duration-500 ease-in-out flex flex-col transform-gpu",
-          sidebarCollapsed ? "lg:ml-16" : "lg:ml-64",
+          // sidebarCollapsed ? "lg:ml-16" : "lg:ml-64",
           className,
         )}
       >
