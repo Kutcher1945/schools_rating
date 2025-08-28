@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { 
   Home, BarChart3, FileText, Trophy, MapPin, ChevronLeft, ChevronRight, 
   Menu, X, User, GraduationCap, Settings, Bell, Search, Sparkles,
-  TrendingUp, Shield, Zap, Star, ArrowRight, ArrowLeft
+  TrendingUp, Shield, Zap, Star, ArrowLeft
 } from "lucide-react"
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -95,7 +95,9 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
   }, [isCollapsed, onCollapseChange])
 
   const handleCollapseToggle = () => {
-    setIsCollapsed(!isCollapsed)
+    const newCollapsedState = !isCollapsed
+    setIsCollapsed(newCollapsedState)
+    setIsButtonHovered(false) // Reset hover state when toggling
   }
 
   const sidebarVariants = {
@@ -108,10 +110,6 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
     visible: { opacity: 1, x: 0 },
   }
 
-  const logoVariants = {
-    expanded: { scale: 1, rotate: 0 },
-    collapsed: { scale: 0.8, rotate: 360 },
-  }
 
   return (
     <>
@@ -151,77 +149,6 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
         </Button>
       </motion.div>
 
-      {/* Enhanced Collapse Button - Positioned outside sidebar when collapsed */}
-      <AnimatePresence>
-        {isCollapsed && (
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
-            className="fixed left-20 top-6 z-30 hidden lg:block"
-            onMouseEnter={() => setIsButtonHovered(true)}
-            onMouseLeave={() => setIsButtonHovered(false)}
-          >
-            <motion.button
-              onClick={handleCollapseToggle}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              className={cn(
-                "relative h-12 rounded-2xl transition-all duration-300",
-                "bg-white/90 backdrop-blur-xl shadow-xl border border-white/20",
-                "hover:bg-white hover:shadow-2xl",
-                "flex items-center justify-center group overflow-hidden",
-                isButtonHovered ? "w-32 px-4" : "w-12"
-              )}
-            >
-              <motion.div
-                animate={{ rotate: 0 }}
-                transition={{ duration: 0.3 }}
-                className="flex items-center gap-2"
-              >
-                <ArrowRight className="h-5 w-5 text-slate-700 group-hover:text-blue-600 transition-colors" />
-                <AnimatePresence>
-                  {isButtonHovered && (
-                    <motion.span
-                      initial={{ opacity: 0, width: 0 }}
-                      animate={{ opacity: 1, width: "auto" }}
-                      exit={{ opacity: 0, width: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="text-sm font-medium text-slate-700 whitespace-nowrap"
-                    >
-                      Открыть
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-              
-              {/* Gradient background on hover */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: isButtonHovered ? 0.1 : 0 }}
-                className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl"
-              />
-            </motion.button>
-
-            {/* Tooltip */}
-            {!isButtonHovered && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="absolute top-full mt-2 left-1/2 -translate-x-1/2"
-              >
-                <div className="bg-slate-800 text-white px-3 py-2 rounded-xl text-xs font-medium whitespace-nowrap shadow-lg">
-                  Развернуть меню
-                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1">
-                    <div className="w-2 h-2 bg-slate-800 rotate-45" />
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Premium Sidebar */}
       <motion.aside
@@ -231,25 +158,38 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
         transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
         className={cn(
           "fixed left-0 top-0 z-40 h-screen",
-          "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900",
-          "backdrop-blur-xl border-r border-slate-700/50 shadow-2xl",
+          "bg-slate-900 border-r border-slate-700/60 shadow-2xl",
+          "backdrop-blur-xl",
           isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
           "transition-transform duration-500 ease-out",
+          "relative overflow-hidden",
           className,
         )}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-800/80 via-slate-900/60 to-transparent" />
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-600/50 to-transparent" />
+        {/* Professional background pattern */}
+        <div className="absolute inset-0 bg-slate-900" />
+        <div className="absolute inset-0 opacity-[0.015]" style={{
+          backgroundImage: `
+            radial-gradient(circle at 20% 50%, white 1px, transparent 1px),
+            radial-gradient(circle at 80% 50%, white 1px, transparent 1px),
+            radial-gradient(circle at 40% 20%, white 1px, transparent 1px),
+            radial-gradient(circle at 60% 80%, white 1px, transparent 1px)
+          `,
+          backgroundSize: '100px 100px, 100px 100px, 100px 100px, 100px 100px',
+          backgroundPosition: '0 0, 0 0, 0 0, 0 0'
+        }} />
+        <div className="absolute top-0 left-0 w-full h-px bg-slate-600/30" />
+        <div className="absolute bottom-0 left-0 w-full h-px bg-slate-600/20" />
+        <div className="absolute inset-y-0 right-0 w-px bg-slate-600/40" />
         
         <div className="relative flex h-full flex-col">
           {/* Enhanced Header */}
-          <div className="flex h-20 items-center justify-between px-6 border-b border-slate-700/50">
-            <motion.div
-              variants={logoVariants}
-              animate={isCollapsed ? "collapsed" : "expanded"}
-              transition={{ duration: 0.5 }}
-              className="flex items-center gap-3"
-            >
+          <div className={cn(
+            "flex h-20 items-center border-b border-slate-700/60 relative",
+            "before:absolute before:bottom-0 before:left-4 before:right-4 before:h-px before:bg-slate-600/20",
+            isCollapsed ? "justify-center px-3" : "justify-center px-6"
+          )}>
+            <div className="flex items-center gap-3">
               <div className="relative">
                 <div className="flex items-center justify-center w-10 h-10 bg-blue-600 rounded-lg shadow-md">
                   <GraduationCap className="w-7 h-7 text-white" />
@@ -264,8 +204,8 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
                   <motion.div
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
-                    transition={{ duration: 0.3 }}
+                    exit={{ opacity: 0, x: -10, transition: { duration: 0.2 } }}
+                    transition={{ duration: 0.3, delay: 0.5 }}
                   >
                     <h2 className="text-s font-bold bg-gradient-to-r from-white to-slate-200 bg-clip-text text-transparent">
                       Цифровой рейтинг школ
@@ -274,67 +214,62 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
                   </motion.div>
                 )}
               </AnimatePresence>
-            </motion.div>
+            </div>
 
-            {/* Enhanced Collapse Button - Inside header when expanded */}
-            <AnimatePresence>
-              {!isCollapsed && (
+          </div>
+
+          {/* Toggle Button Section */}
+          <div className={cn(
+            "flex items-center justify-center py-4 border-b border-slate-700/60 relative",
+            "before:absolute before:bottom-0 before:left-4 before:right-4 before:h-px before:bg-slate-600/15",
+            isCollapsed ? "px-3" : "px-6"
+          )}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Button
+                type="button"
+                variant="ghost"
+                className={cn(
+                  "rounded-xl transition-all duration-300 relative group overflow-hidden cursor-pointer",
+                  "bg-slate-800/60 hover:bg-slate-700 shadow-lg hover:shadow-xl",
+                  "text-slate-300 hover:text-white hover:scale-105",
+                  "border border-slate-600/30",
+                  isCollapsed ? "h-10 w-10" : "h-10 px-4 gap-2"
+                )}
+                onClick={handleCollapseToggle}
+              >
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
+                  animate={{ rotate: isCollapsed ? 180 : 0 }}
                   transition={{ duration: 0.3 }}
-                  onMouseEnter={() => setIsButtonHovered(true)}
-                  onMouseLeave={() => setIsButtonHovered(false)}
+                  className="flex-shrink-0"
                 >
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className={cn(
-                      "h-10 w-10 rounded-xl transition-all duration-300",
-                      "bg-slate-800/60 hover:bg-slate-700 shadow-lg hover:shadow-xl",
-                      "text-slate-300 hover:text-white hover:scale-110",
-                      "border border-slate-600/30 relative group overflow-hidden"
-                    )}
-                    onClick={handleCollapseToggle}
-                  >
-                    <motion.div
-                      animate={{ rotate: 0 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <ArrowLeft className="h-5 w-5" />
-                    </motion.div>
-                    
-                    {/* Hover effect */}
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: isButtonHovered ? 0.1 : 0 }}
-                      className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl"
-                    />
-                  </Button>
-
-                  {/* Tooltip for expanded state */}
-                  {isButtonHovered && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="absolute bottom-full mb-2 right-0"
-                    >
-                      <div className="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-medium whitespace-nowrap shadow-lg border border-slate-700">
-                        Свернуть меню
-                        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1">
-                          <div className="w-2 h-2 bg-slate-900 rotate-45" />
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
+                  <ArrowLeft className="h-5 w-5" />
                 </motion.div>
-              )}
-            </AnimatePresence>
+                
+                <AnimatePresence>
+                  {!isCollapsed && (
+                    <motion.span
+                      initial={{ opacity: 0, width: 0 }}
+                      animate={{ opacity: 1, width: "auto" }}
+                      exit={{ opacity: 0, width: 0, transition: { duration: 0.1 } }}
+                      transition={{ duration: 0.3, delay: 0.1 }}
+                      className="text-sm font-medium whitespace-nowrap overflow-hidden"
+                    >
+                      {isCollapsed ? 'Раскрыть меню' : 'Скрыть меню'}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+                
+              </Button>
+
+            </motion.div>
           </div>
 
           {/* Quick Actions Bar */}
-          <AnimatePresence>
+          {/* <AnimatePresence>
             {!isCollapsed && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
@@ -363,7 +298,7 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
                 </div>
               </motion.div>
             )}
-          </AnimatePresence>
+          </AnimatePresence> */}
 
           {/* Enhanced Navigation */}
           <nav className={cn(
@@ -406,17 +341,12 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
                       />
                     )}
 
-                    {/* Icon with gradient background */}
-                    <div className={cn(
-                      "relative flex items-center justify-center rounded-xl transition-all duration-300",
-                      isCollapsed ? "w-12 h-12" : "w-10 h-10",
-                      isActive 
-                        ? `bg-gradient-to-br ${item.gradient} shadow-lg` 
-                        : "bg-slate-800/60 group-hover:bg-slate-700/80 shadow-sm group-hover:shadow-md border border-slate-600/30 group-hover:border-slate-500/50"
-                    )}>
+                    {/* Icon */}
+                    <div className="relative">
                       <Icon
                         className={cn(
-                          "w-5 h-5 transition-all duration-300 flex-shrink-0",
+                          "transition-all duration-300 flex-shrink-0",
+                          isCollapsed ? "w-6 h-6" : "w-5 h-5",
                           isActive ? "text-white" : isCollapsed ? item.iconColor : "text-slate-300",
                           "group-hover:scale-110 group-hover:text-white"
                         )}
@@ -427,10 +357,7 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
-                          className={cn(
-                            "absolute w-3 h-3 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-sm",
-                            isCollapsed ? "-top-1 -right-1" : "-top-0.5 -right-0.5"
-                          )}
+                          className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-sm"
                         >
                           <Zap className="w-2 h-2 text-white" />
                         </motion.div>
@@ -528,7 +455,7 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
               )}
             </AnimatePresence>
 
-            <div
+            {/* <div
               className={cn(
                 "flex items-center gap-3 p-3 rounded-2xl transition-all duration-300",
                 "bg-slate-800/60 hover:bg-slate-700 shadow-lg hover:shadow-xl cursor-pointer",
@@ -560,7 +487,7 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
                   </motion.div>
                 )}
               </AnimatePresence>
-            </div>
+            </div> */}
           </div>
         </div>
       </motion.aside>
