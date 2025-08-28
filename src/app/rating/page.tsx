@@ -10,6 +10,7 @@ import { MapPin, School, Users, TrendingUp, GraduationCap, Search, FileText, Tro
 import { motion, AnimatePresence } from 'framer-motion'
 import SchoolNumberBarChart from '../../components/school-number-barchart'
 import SchoolRatingBarChart from '../../components/school-rating-barchart'
+import RatingTable from '../../components/rating-table'
 
 export default function RatingPage() {
     const [selectedDistrict, setSelectedDistrict] = useState<string>("all")
@@ -169,17 +170,15 @@ export default function RatingPage() {
                                         <SchoolRatingBarChart/>
                                     </div>
                                 </div>
+
                                 <div className="bg-white rounded-xl border border-slate-200 h-full overflow-hidden w-full">
                                     <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-slate-200">
                                         <div className="flex items-center p-2 text-lg">
-                                            <h3 className="text-black">Общий рейтинг школ</h3>
+                                            <h3 className="text-black">Таблица рейтингов всех показателей</h3>
                                         </div>
                                     </div>
                                     <div className="p-2">
-                                        <SchoolNumberBarChart/>
-                                    </div>
-                                    <div className="p-2">
-                                        <SchoolRatingBarChart/>
+                                        <RatingTable/>
                                     </div>
                                 </div>
                             </div>
