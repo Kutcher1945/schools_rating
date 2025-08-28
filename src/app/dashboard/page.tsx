@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { mockAuth, MockUser } from '@/lib/mock-auth'
+import { SidebarLayout } from "@/components/sidebar-layout"
 
 export default function DashboardPage() {
   const [user, setUser] = useState<MockUser | null>(null)
@@ -130,6 +131,7 @@ export default function DashboardPage() {
       animate="visible"
       variants={containerVariants}
     >
+      <SidebarLayout>
       {/* Header */}
       <motion.header 
         className="bg-white shadow-sm border-b border-slate-200"
@@ -556,6 +558,7 @@ export default function DashboardPage() {
           </motion.div>
         </div>
       </main>
+    </SidebarLayout>
     </motion.div>
   )
 }
