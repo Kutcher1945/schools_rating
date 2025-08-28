@@ -144,13 +144,13 @@ export default function DashboardPage() {
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}
             >
-              <div className="flex items-center justify-center w-10 h-10 bg-blue-600 rounded-lg shadow-md">
+              {/* <div className="flex items-center justify-center w-10 h-10 bg-blue-600 rounded-lg shadow-md">
                 <GraduationCap className="w-6 h-6 text-white" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-slate-900">Цифровой рейтинг школ</h1>
                 <p className="text-sm text-slate-600">Панель управления</p>
-              </div>
+              </div> */}
             </motion.div>
             
             <div className="flex items-center space-x-4">

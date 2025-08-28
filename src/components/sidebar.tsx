@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { 
   Home, BarChart3, FileText, Trophy, MapPin, ChevronLeft, ChevronRight, 
   Menu, X, User, GraduationCap, Settings, Bell, Search, Sparkles,
-  TrendingUp, Shield, Zap, Star
+  TrendingUp, Shield, Zap, Star, ArrowRight, ArrowLeft
 } from "lucide-react"
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -86,6 +86,7 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const [hoveredItem, setHoveredItem] = useState<string | null>(null)
+  const [isButtonHovered, setIsButtonHovered] = useState(false)
   const pathname = usePathname()
   const sidebarRef = useRef<HTMLDivElement>(null)
 
@@ -104,14 +105,7 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
 
   const itemVariants = {
     hidden: { opacity: 0, x: -20 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: {
-        duration: 0.6,
-        ease: [0.4, 0, 0.2, 1] as any,
-      },
-    },
+    visible: { opacity: 1, x: 0 },
   }
 
   const logoVariants = {
@@ -152,10 +146,82 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
             animate={{ rotate: isMobileOpen ? 90 : 0 }}
             transition={{ duration: 0.3 }}
           >
-            {isMobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {isMobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </motion.div>
         </Button>
       </motion.div>
+
+      {/* Enhanced Collapse Button - Positioned outside sidebar when collapsed */}
+      <AnimatePresence>
+        {isCollapsed && (
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+            className="fixed left-20 top-6 z-30 hidden lg:block"
+            onMouseEnter={() => setIsButtonHovered(true)}
+            onMouseLeave={() => setIsButtonHovered(false)}
+          >
+            <motion.button
+              onClick={handleCollapseToggle}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className={cn(
+                "relative h-12 rounded-2xl transition-all duration-300",
+                "bg-white/90 backdrop-blur-xl shadow-xl border border-white/20",
+                "hover:bg-white hover:shadow-2xl",
+                "flex items-center justify-center group overflow-hidden",
+                isButtonHovered ? "w-32 px-4" : "w-12"
+              )}
+            >
+              <motion.div
+                animate={{ rotate: 0 }}
+                transition={{ duration: 0.3 }}
+                className="flex items-center gap-2"
+              >
+                <ArrowRight className="h-5 w-5 text-slate-700 group-hover:text-blue-600 transition-colors" />
+                <AnimatePresence>
+                  {isButtonHovered && (
+                    <motion.span
+                      initial={{ opacity: 0, width: 0 }}
+                      animate={{ opacity: 1, width: "auto" }}
+                      exit={{ opacity: 0, width: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="text-sm font-medium text-slate-700 whitespace-nowrap"
+                    >
+                      Открыть
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+              
+              {/* Gradient background on hover */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isButtonHovered ? 0.1 : 0 }}
+                className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl"
+              />
+            </motion.button>
+
+            {/* Tooltip */}
+            {!isButtonHovered && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="absolute top-full mt-2 left-1/2 -translate-x-1/2"
+              >
+                <div className="bg-slate-800 text-white px-3 py-2 rounded-xl text-xs font-medium whitespace-nowrap shadow-lg">
+                  Развернуть меню
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1">
+                    <div className="w-2 h-2 bg-slate-800 rotate-45" />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Premium Sidebar */}
       <motion.aside
@@ -165,19 +231,19 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
         transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
         className={cn(
           "fixed left-0 top-0 z-40 h-screen",
-          "bg-gradient-to-br from-slate-50 via-white to-blue-50/30",
-          "backdrop-blur-xl border-r border-white/20 shadow-2xl",
+          "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900",
+          "backdrop-blur-xl border-r border-slate-700/50 shadow-2xl",
           isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
           "transition-transform duration-500 ease-out",
           className,
         )}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-white/80 via-white/60 to-transparent" />
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-800/80 via-slate-900/60 to-transparent" />
+        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-600/50 to-transparent" />
         
         <div className="relative flex h-full flex-col">
           {/* Enhanced Header */}
-          <div className="flex h-20 items-center justify-between px-6 border-b border-white/10">
+          <div className="flex h-20 items-center justify-between px-6 border-b border-slate-700/50">
             <motion.div
               variants={logoVariants}
               animate={isCollapsed ? "collapsed" : "expanded"}
@@ -185,12 +251,12 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
               className="flex items-center gap-3"
             >
               <div className="relative">
-                <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl shadow-lg">
-                  <GraduationCap className="w-6 h-6 text-white" />
+                <div className="flex items-center justify-center w-10 h-10 bg-blue-600 rounded-lg shadow-md">
+                  <GraduationCap className="w-7 h-7 text-white" />
                 </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
-                  <Sparkles className="w-2.5 h-2.5 text-white" />
-                </div>
+                {/* <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+                  <Sparkles className="w-2 h-2 text-white" />
+                </div> */}
               </div>
               
               <AnimatePresence>
@@ -201,34 +267,70 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
                     exit={{ opacity: 0, x: -10 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <h2 className="text-xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                      EduRank Pro
+                    <h2 className="text-s font-bold bg-gradient-to-r from-white to-slate-200 bg-clip-text text-transparent">
+                      Цифровой рейтинг школ
                     </h2>
-                    <p className="text-xs text-slate-500 font-medium">Premium Analytics</p>
+                    {/* <p className="text-xs text-slate-400 font-medium">Premium Analytics</p> */}
                   </motion.div>
                 )}
               </AnimatePresence>
             </motion.div>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              className={cn(
-                "hidden lg:flex h-10 w-10 rounded-xl",
-                "bg-white/60 hover:bg-white shadow-lg hover:shadow-xl",
-                "text-slate-600 hover:text-slate-800",
-                "transition-all duration-300 hover:scale-110",
-                "border border-white/20"
+            {/* Enhanced Collapse Button - Inside header when expanded */}
+            <AnimatePresence>
+              {!isCollapsed && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.3 }}
+                  onMouseEnter={() => setIsButtonHovered(true)}
+                  onMouseLeave={() => setIsButtonHovered(false)}
+                >
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={cn(
+                      "h-10 w-10 rounded-xl transition-all duration-300",
+                      "bg-slate-800/60 hover:bg-slate-700 shadow-lg hover:shadow-xl",
+                      "text-slate-300 hover:text-white hover:scale-110",
+                      "border border-slate-600/30 relative group overflow-hidden"
+                    )}
+                    onClick={handleCollapseToggle}
+                  >
+                    <motion.div
+                      animate={{ rotate: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <ArrowLeft className="h-5 w-5" />
+                    </motion.div>
+                    
+                    {/* Hover effect */}
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: isButtonHovered ? 0.1 : 0 }}
+                      className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl"
+                    />
+                  </Button>
+
+                  {/* Tooltip for expanded state */}
+                  {isButtonHovered && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="absolute bottom-full mb-2 right-0"
+                    >
+                      <div className="bg-slate-900 text-white px-3 py-2 rounded-xl text-xs font-medium whitespace-nowrap shadow-lg border border-slate-700">
+                        Свернуть меню
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1">
+                          <div className="w-2 h-2 bg-slate-900 rotate-45" />
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </motion.div>
               )}
-              onClick={handleCollapseToggle}
-            >
-              <motion.div
-                animate={{ rotate: isCollapsed ? 180 : 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </motion.div>
-            </Button>
+            </AnimatePresence>
           </div>
 
           {/* Quick Actions Bar */}
@@ -239,7 +341,7 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
-                className="px-6 py-4 border-b border-white/10"
+                className="px-6 py-4 border-b border-slate-700/50"
               >
                 <div className="flex gap-2">
                   {quickActions.map((action, i) => (
@@ -248,9 +350,9 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.1 }}
-                      className="relative flex items-center gap-2 px-3 py-2 rounded-xl bg-white/60 hover:bg-white shadow-sm hover:shadow-md transition-all duration-300 text-sm font-medium text-slate-600 hover:text-slate-800 flex-1 justify-center"
+                      className="relative flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-800/60 hover:bg-slate-700 shadow-sm hover:shadow-md transition-all duration-300 text-sm font-medium text-slate-300 hover:text-white flex-1 justify-center border border-slate-600/30"
                     >
-                      <action.icon className="w-4 h-4" />
+                      <action.icon className="w-4 h-4 flex-shrink-0" />
                       {action.count && (
                         <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
                           {action.count}
@@ -264,7 +366,10 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
           </AnimatePresence>
 
           {/* Enhanced Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+          <nav className={cn(
+            "flex-1 py-6 space-y-2 overflow-y-auto",
+            isCollapsed ? "px-2" : "px-4"
+          )}>
             {navItems.map((item, i) => {
               const Icon = item.icon
               const isActive = pathname === item.href
@@ -283,11 +388,12 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
                   <Link
                     href={item.href}
                     className={cn(
-                      "flex items-center gap-4 rounded-2xl px-4 py-3.5 transition-all duration-300 ease-out",
+                      "flex items-center rounded-2xl transition-all duration-300 ease-out",
                       "group relative overflow-hidden",
+                      isCollapsed ? "px-3 py-3.5 justify-center" : "gap-4 px-4 py-3.5",
                       isActive
-                        ? "bg-white shadow-xl text-slate-800 scale-[1.02]"
-                        : "text-slate-600 hover:bg-white/70 hover:shadow-lg hover:text-slate-800",
+                        ? "bg-slate-800 shadow-xl text-white scale-[1.02] border border-slate-600/30"
+                        : "text-slate-300 hover:bg-slate-800/60 hover:shadow-lg hover:text-white",
                     )}
                     onClick={() => setIsMobileOpen(false)}
                   >
@@ -302,16 +408,17 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
 
                     {/* Icon with gradient background */}
                     <div className={cn(
-                      "relative flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-300",
+                      "relative flex items-center justify-center rounded-xl transition-all duration-300",
+                      isCollapsed ? "w-12 h-12" : "w-10 h-10",
                       isActive 
                         ? `bg-gradient-to-br ${item.gradient} shadow-lg` 
-                        : "bg-white/60 group-hover:bg-white shadow-sm group-hover:shadow-md"
+                        : "bg-slate-800/60 group-hover:bg-slate-700/80 shadow-sm group-hover:shadow-md border border-slate-600/30 group-hover:border-slate-500/50"
                     )}>
                       <Icon
                         className={cn(
-                          "w-5 h-5 transition-all duration-300",
-                          isActive ? "text-white" : item.iconColor,
-                          "group-hover:scale-110"
+                          "w-5 h-5 transition-all duration-300 flex-shrink-0",
+                          isActive ? "text-white" : isCollapsed ? item.iconColor : "text-slate-300",
+                          "group-hover:scale-110 group-hover:text-white"
                         )}
                       />
                       
@@ -320,9 +427,12 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
-                          className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center"
+                          className={cn(
+                            "absolute w-3 h-3 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-sm",
+                            isCollapsed ? "-top-1 -right-1" : "-top-0.5 -right-0.5"
+                          )}
                         >
-                          <Zap className="w-1.5 h-1.5 text-white" />
+                          <Zap className="w-2 h-2 text-white" />
                         </motion.div>
                       )}
                     </div>
@@ -349,7 +459,7 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
                               </span>
                             )}
                           </div>
-                          <p className="text-xs text-slate-500 mt-0.5 font-medium">{item.description}</p>
+                          <p className="text-xs text-slate-400 mt-0.5 font-medium">{item.description}</p>
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -360,12 +470,12 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
                         initial={{ opacity: 0, x: -10, scale: 0.9 }}
                         animate={{ opacity: 1, x: 0, scale: 1 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute left-full ml-4 z-50"
+                        className="absolute left-full ml-6 top-1/2 -translate-y-1/2 z-50"
                       >
-                        <div className="bg-slate-800 text-white px-4 py-3 rounded-2xl shadow-2xl border border-slate-700 min-w-[200px]">
+                        <div className="bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-slate-700 min-w-[200px]">
                           <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center`}>
-                              <Icon className="w-4 h-4 text-white" />
+                            <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center shadow-sm`}>
+                              <Icon className="w-4 h-4 text-white flex-shrink-0" />
                             </div>
                             <div>
                               <p className="font-semibold text-sm">{item.title}</p>
@@ -379,7 +489,7 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
                           )}
                           {/* Enhanced arrow */}
                           <div className="absolute left-0 top-1/2 -translate-x-2 -translate-y-1/2">
-                            <div className="w-4 h-4 bg-slate-800 border-l border-t border-slate-700 rotate-45" />
+                            <div className="w-4 h-4 bg-slate-900 border-l border-t border-slate-700 rotate-45" />
                           </div>
                         </div>
                       </motion.div>
@@ -391,27 +501,27 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
           </nav>
 
           {/* Premium Footer with Stats */}
-          <div className="border-t border-white/10 p-6">
+          <div className="border-t border-slate-700/50 p-6">
             <AnimatePresence>
               {!isCollapsed && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 20 }}
-                  className="mb-4 p-4 rounded-2xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-200/20"
+                  className="mb-4 p-4 rounded-2xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-400/20"
                 >
                   <div className="flex items-center gap-3 mb-3">
-                    <TrendingUp className="w-5 h-5 text-blue-600" />
-                    <span className="font-semibold text-sm text-slate-700">Статистика</span>
+                    <TrendingUp className="w-5 h-5 text-blue-400 flex-shrink-0" />
+                    <span className="font-semibold text-sm text-slate-300">Статистика</span>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="text-center">
-                      <div className="text-lg font-bold text-slate-800">245</div>
-                      <div className="text-xs text-slate-500">Школы</div>
+                      <div className="text-lg font-bold text-white">245</div>
+                      <div className="text-xs text-slate-400">Школы</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-lg font-bold text-slate-800">98%</div>
-                      <div className="text-xs text-slate-500">Рейтинг</div>
+                      <div className="text-lg font-bold text-white">98%</div>
+                      <div className="text-xs text-slate-400">Рейтинг</div>
                     </div>
                   </div>
                 </motion.div>
@@ -421,15 +531,15 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
             <div
               className={cn(
                 "flex items-center gap-3 p-3 rounded-2xl transition-all duration-300",
-                "bg-white/60 hover:bg-white shadow-lg hover:shadow-xl cursor-pointer",
-                "border border-white/20"
+                "bg-slate-800/60 hover:bg-slate-700 shadow-lg hover:shadow-xl cursor-pointer",
+                "border border-slate-600/30"
               )}
             >
               <div className="relative">
                 <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-lg">
-                  <User className="w-5 h-5 text-white" />
+                  <User className="w-5 h-5 text-white flex-shrink-0" />
                 </div>
-                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-slate-800 flex items-center justify-center">
                   <div className="w-2 h-2 bg-white rounded-full" />
                 </div>
               </div>
@@ -443,10 +553,10 @@ export function Sidebar({ className, defaultCollapsed = false, onCollapseChange 
                     className="flex-1 min-w-0"
                   >
                     <div className="flex items-center gap-2">
-                      <p className="text-sm font-bold text-slate-800">Adilan Akhramovich</p>
-                      <Shield className="w-3 h-3 text-blue-600" />
+                      <p className="text-sm font-bold text-white">Adilan Akhramovich</p>
+                      <Shield className="w-3 h-3 text-blue-400 flex-shrink-0" />
                     </div>
-                    <p className="text-xs text-slate-500 font-medium">Premium Account</p>
+                    <p className="text-xs text-slate-400 font-medium">Premium Account</p>
                   </motion.div>
                 )}
               </AnimatePresence>
