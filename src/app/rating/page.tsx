@@ -86,7 +86,8 @@ export default function RatingPage() {
                     <motion.div variants={itemVariants}>
                         <Card className="overflow-hidden bg-white rounded-2xl shadow-sm border border-slate-200">
                         <CardContent className="p-6">
-                            <div className="flex gap-6 min-h-screen">
+                            <div className="min-h-screen">
+                            <div className="flex gap-6">
                                 <div className="flex flex-col gap-6 w-64 flex-shrink-0">
                                     <div className="space-y-3">
                                         <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Фильтры</h3>
@@ -154,31 +155,32 @@ export default function RatingPage() {
                                     </div>
                                 </div>
 
-
-                                <div className="flex-shrink-0 bg-white rounded-xl border border-slate-200 h-full overflow-hidden">
-                                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-slate-200">
-                                        <div className="flex items-center p-2 text-lg">
-                                            <h3 className="text-black">Общий рейтинг школ</h3>
-                                        </div>
-                                    </div>
-                                    <div className="p-2">
-                                        <SchoolNumberBarChart/>
-                                    </div>
-                                    <div className="p-2">
-                                        <SchoolRatingBarChart/>
-                                    </div>
-                                </div>
-
                                 <div className="bg-white rounded-xl border border-slate-200 h-full overflow-hidden">
                                     <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-slate-200">
                                         <div className="flex items-center p-2 text-lg">
                                             <h3 className="text-black">Таблица рейтингов всех показателей</h3>
                                         </div>
                                     </div>
-                                    <div className="flex-1 w-[500px] p-2">
+                                    <div className="flex-1 p-2">
                                         <RatingTable/>
                                     </div>
                                 </div>
+                            </div>
+                            <div className="bg-white rounded-xl border border-slate-200 h-full overflow-hidden">
+                                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-slate-200">
+                                    <div className="flex items-center p-2 text-lg">
+                                        <h3 className="text-black">Общий рейтинг школ</h3>
+                                    </div>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <div className="p-2 w-1/2 h-full">
+                                        <SchoolNumberBarChart/>
+                                    </div>
+                                    <div className="p-2 w-1/2 h-full">
+                                        <SchoolRatingBarChart/>
+                                    </div>
+                                </div>
+                            </div>
                             </div>
                         </CardContent>
                         </Card>

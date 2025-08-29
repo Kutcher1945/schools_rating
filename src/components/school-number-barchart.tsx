@@ -15,7 +15,7 @@ const data = [
 
 export default function SchoolNumberBarChart() {
   return (
-    <div className="w-full h-[400px] bg-white p-4 rounded-2xl shadow">
+    <div className="w-full h-[400px]">
       <h2 className="text-center text-lg font-semibold mb-4 text-black">Количество школ по районам</h2>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart

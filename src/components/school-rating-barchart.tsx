@@ -25,7 +25,7 @@ const data = [
 
 export default function SchoolRatingBarChart() {
   return (
-    <div className="w-full h-[450px] bg-white p-4 rounded-2xl shadow">
+    <div className="w-full h-[450px] bg-white p-2 pb-5">
       <h2 className="text-center text-lg font-semibold mb-4 text-black">Рейтинг школ по районам</h2>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
