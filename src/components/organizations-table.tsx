@@ -117,7 +117,7 @@ export default function OrganizationsTable() {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentData = mockData.slice(startIndex, endIndex);
-
+ 
   return (
     <div className="w-full">
       <div className="overflow-x-auto border border-slate-200 rounded-lg bg-white">

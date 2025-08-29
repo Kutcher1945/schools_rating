@@ -97,7 +97,7 @@ export default function RatingTable() {
   
   const totalPages = Math.ceil(mockData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
+  const endIndex = startIndex + itemsPerPage; 
   const currentData = mockData.slice(startIndex, endIndex);
 
   return (
