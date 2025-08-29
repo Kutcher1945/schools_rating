@@ -101,9 +101,9 @@ export default function RatingTable() {
   const currentData = mockData.slice(startIndex, endIndex);
 
   return (
-    <div className="w-full ">
+    <div className="w-full">
       <div className="overflow-x-auto border border-slate-200 rounded-lg bg-white">
-        <table className="w-full text-sm">
+        <table className="text-sm w-full">
           <thead className="bg-slate-50">
             <tr>
               <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider border-b border-slate-200">
