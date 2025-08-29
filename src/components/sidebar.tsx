@@ -74,6 +74,14 @@ const navItems: NavItem[] = [
     description: "Географическое размещение",
     gradient: "from-green-500 to-emerald-500",
   },
+  {
+    title: "Прогноз дефицита школьных мест",
+    href: "/deficit",
+    icon: BarChart3,
+    iconColor: "text-red-500",
+    description: "Аналитика и прогноз по загруженности школ",
+    gradient: "from-red-500 to-orange-500",
+  },
 ]
 
 const quickActions = [
