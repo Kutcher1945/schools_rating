@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { MapPin, FileText, Search } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
-import RatingTable from "@/components/rating-table"
+import OrganizationsTable from "@/components/organizations-table"
 
 export default function OrganizationsPage(){
     const [selectedDistrict, setSelectedDistrict] = useState<string>("all")
@@ -77,7 +77,6 @@ export default function OrganizationsPage(){
                 </motion.header>
                 <main className="space-y-6 p-6">
                     <div className="w-64 space-y-3">
-                        <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Фильтры</h3>
                         <div className="space-y-2">
                             <label className="text-xs font-medium text-slate-600 uppercase tracking-wide">Район</label>
                             <Select value={selectedDistrict} onValueChange={setSelectedDistrict}>
@@ -113,10 +112,10 @@ export default function OrganizationsPage(){
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <RatingTable/>
+                    <div className="w-[1100px]">
+                        <OrganizationsTable/>
                     </div>
-                </main>
+                </main> 
             </motion.div>
         </SidebarLayout>
     )
