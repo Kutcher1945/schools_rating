@@ -48,13 +48,13 @@ export default function MapPage() {
     ]
 
     return (
-        <SidebarLayout>
-            <motion.div 
-                className="min-h-screen"
-                initial="hidden"
-                animate="visible"
-                variants={containerVariants}
-            >
+        <motion.div 
+            className="min-h-screen"
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+        >
+            <SidebarLayout>
                 {/* Header */}
                 <motion.header
                     className="bg-white shadow-sm border-b border-slate-200"
@@ -80,39 +80,22 @@ export default function MapPage() {
                 </motion.header>
 
                 {/* Main Content */}
-                <main className="space-y-6 p-6">
-                    {/* Map Container */}
-                    <motion.div variants={itemVariants}>
-                        <Card className="overflow-hidden bg-white rounded-2xl shadow-sm border border-slate-200">
-                            {/* <CardHeader className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200 pb-6">
-                                <CardTitle className="flex items-center gap-3 text-xl">
-                                    <div className="p-2 bg-emerald-100 rounded-lg">
-                                        <MapPin className="w-5 h-5 text-emerald-600" />
-                                    </div>
-                                    Интерактивная карта
-                                </CardTitle>
-                                <CardDescription className="text-base">
-                                    Нажмите на маркеры школ для получения подробной информации
-                                </CardDescription>
-                            </CardHeader> */}
-                        <CardContent className="p-6">
-                            <div className="flex gap-6 h-[700px]">
-                            {/* Left Sidebar - Controls and Indicators */}
-                                <div className="flex flex-col gap-6 w-64 flex-shrink-0">
+                <main className="py-6 px-4 sm:px-6 lg:px-8">
+                    <div className="py-6">
+                        <motion.div 
+                            className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8"
+                            variants={itemVariants}
+                            // whileHover={cardHoverVariants.hover}
+                        >
+                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                                <div className="flex flex-col gap-6 lg:col-span-1">
                                     <div className="space-y-3">
                                         <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Фильтры</h3>
-                                        {/* <Button
-                                            variant="outline"
-                                            className="w-full justify-start gap-3 h-12 bg-white hover:bg-slate-50 border-slate-300 text-slate-700 font-medium"
-                                        >
-                                            <MapPin className="w-4 h-4 text-slate-500" />
-                                            Все районы
-                                        </Button> */}
                                         <div className="space-y-2">
                                             <label className="text-xs font-medium text-slate-600 uppercase tracking-wide">Район</label>
                                             <Select value={selectedDistrict} onValueChange={setSelectedDistrict}>
                                             <SelectTrigger className="w-full h-12 bg-white hover:bg-slate-50 border-slate-300">
-                                                <div className="flex items-center gap-3 text-black">
+                                                <div className="flex items-center gap-3 text-gray-400">
                                                     <MapPin className="w-4 h-4 text-slate-500" />
                                                     <SelectValue placeholder="Все районы" />
                                                 </div>
@@ -127,13 +110,6 @@ export default function MapPage() {
                                             </SelectContent>
                                             </Select>
                                         </div>
-                                        {/* <Button
-                                            variant="outline"
-                                            className="w-full justify-start gap-3 h-12 bg-white hover:bg-slate-50 border-slate-300 text-slate-700 font-medium"
-                                        >
-                                            <Search className="w-4 h-4 text-slate-500" />
-                                            Наименование школы
-                                        </Button> */}
                                         <div className="space-y-2">
                                             <label className="text-xs font-medium text-slate-600 uppercase tracking-wide">
                                             Поиск школы
@@ -177,112 +153,99 @@ export default function MapPage() {
                                             </div>
                                         </motion.div>
                                     </div>
-                                </div>
-
-                                {/* Map component */}
-                                <div className="flex-1 min-w-0">
-                                    <div className="h-full bg-slate-100 rounded-xl border border-slate-200 overflow-hidden">
+                                </div>  
+                                <div className="flex-1 min-w-0 bg-slate-100 rounded-xl border border-slate-200 overflow-hidden lg:col-span-2">
                                     <Map className="w-full h-full" />
-                                    </div>
                                 </div>
-
-                                <Card className="w-80 flex-shrink-0 bg-white rounded-xl border border-slate-200 h-full overflow-hidden">
-                                    <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-slate-200 pb-4">
-                                        <CardTitle className="flex items-center gap-3 text-lg">
-                                            <div className="p-2 bg-blue-100 rounded-lg">
-                                                <FileText className="w-5 h-5 text-blue-600" />
+                                <div className="flex flex-col items-center gap-6 bg-white rounded-xl shadow-sm border border-slate-200 p-4 lg:col-span-1">
+                                    <div className="space-y-3">
+                                        <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Паспорт объекта</h3>  
+                                    </div>
+                                    <div className="space-y-6">
+                                        <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200">
+                                            <div className="w-2/3">
+                                                <h3 className="text-blue-700 font-semibold mb-2">Средний рейтинг школы</h3>
+                                                <p className="text-slate-600 text-sm leading-relaxed">
+                                                    Что соответствует хорошему показателю по городу Алматы
+                                                </p>
                                             </div>
-                                            Паспорт объекта
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="p-6 overflow-y-auto">
-                                        <div className="space-y-6">
-                                            <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                                <div className="w-2/3">
-                                                    <h3 className="text-blue-700 font-semibold mb-2">Средний рейтинг школы</h3>
-                                                    <p className="text-slate-600 text-sm leading-relaxed">
-                                                        Что соответствует хорошему показателю по городу Алматы
+                                            <div className="flex items-center justify-center w-16 h-16 bg-green-200 rounded-full border border-green-300">
+                                                <p className="text-black font-bold text-lg">98%</p>
+                                            </div>
+                                        </div>
+                                        
+
+                                        <div className="space-y-4">
+                                            <div className="border border-blue-200 space-y-3 rounded-xl p-3">
+                                                <h3 className="text-indigo-600 font-bold text-sm uppercase tracking-wider">
+                                                    Основная информация
+                                                </h3>
+                                                <div>
+                                                    <p className="text-gray-600 font-semibold text-xs uppercase tracking-wide mb-1">
+                                                        Наименование школы
                                                     </p>
-                                                </div>
-                                                <div className="flex items-center justify-center w-16 h-16 bg-green-200 rounded-full border border-green-300">
-                                                    <p className="text-black font-bold text-lg">98%</p>
-                                                </div>
-                                            </div>
-                                            
-
-                                            <div className="space-y-4">
-                                                <div className="border border-blue-200 space-y-3 rounded-xl p-3">
-                                                    <h3 className="text-indigo-600 font-bold text-sm uppercase tracking-wider">
-                                                        Основная информация
-                                                    </h3>
-                                                    <div>
-                                                        <p className="text-gray-600 font-semibold text-xs uppercase tracking-wide mb-1">
-                                                            Наименование школы
-                                                        </p>
-                                                        <p className="text-slate-800 font-medium">ГКП на ПХВ Спец лицей</p>
-                                                    </div>
-
-                                                    <div className="grid grid-cols-2 gap-4">
-                                                        <div>
-                                                            <p className="text-gray-600 font-semibold text-xs uppercase tracking-wide mb-1">Район</p>
-                                                            <p className="text-slate-800">Бостандыкский район</p>
-                                                        </div>
-
-                                                        <div>
-                                                            <p className="text-gray-600 font-semibold text-xs uppercase tracking-wide mb-1">
-                                                            Год основания
-                                                            </p>
-                                                            <p className="text-slate-800">2017 год</p>
-                                                        </div>
-                                                    </div>
+                                                    <p className="text-slate-800 font-medium">ГКП на ПХВ Спец лицей</p>
                                                 </div>
 
                                                 <div className="grid grid-cols-2 gap-4">
-                                                    <div className="bg-blue-100 border border-blue-200 rounded-xl p-3">
-                                                        <h3 className="text-blue-600 font-semibold text-sm uppercase tracking-wide mb-1">
-                                                            Учащихся
-                                                        </h3>
-                                                        <p className="text-slate-800 font-bold text-lg">1,100</p>
+                                                    <div>
+                                                        <p className="text-gray-600 font-semibold text-xs uppercase tracking-wide mb-1">Район</p>
+                                                        <p className="text-slate-800">Бостандыкский район</p>
                                                     </div>
-                                                    <div className="bg-purple-100 border border-purple-200 rounded-xl p-3">
-                                                        <h3 className="text-purple-600 font-semibold text-sm uppercase tracking-wide mb-1">
-                                                            Мощность
-                                                        </h3>
-                                                        <p className="text-slate-800 font-bold text-lg">1,500</p>
+
+                                                    <div>
+                                                        <p className="text-gray-600 font-semibold text-xs uppercase tracking-wide mb-1">
+                                                        Год основания
+                                                        </p>
+                                                        <p className="text-slate-800">2017 год</p>
                                                     </div>
                                                 </div>
+                                            </div>
 
-                                                <div className="border border-gray-200 space-y-3 rounded-xl p-3 bg-gray-100">
-                                                    <h3 className="text-gray-600 font-bold text-sm uppercase tracking-wider ">
-                                                        Контактная информация
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="bg-blue-100 border border-blue-200 rounded-xl p-3">
+                                                    <h3 className="text-blue-600 font-semibold text-sm uppercase tracking-wide mb-1">
+                                                        Учащихся
                                                     </h3>
-                                                    <div>
-                                                        <p className="text-gray-600 font-semibold text-xs uppercase tracking-wide mb-1">
-                                                            Директор
-                                                        </p>
-                                                        <h3 className="text-slate-800 text-sm font-bold">Иванов Иван Иванович</h3>
-                                                    </div>
+                                                    <p className="text-slate-800 font-bold text-lg">1,100</p>
+                                                </div>
+                                                <div className="bg-purple-100 border border-purple-200 rounded-xl p-3">
+                                                    <h3 className="text-purple-600 font-semibold text-sm uppercase tracking-wide mb-1">
+                                                        Мощность
+                                                    </h3>
+                                                    <p className="text-slate-800 font-bold text-lg">1,500</p>
+                                                </div>
+                                            </div>
 
-                                                    <div>
-                                                        <p className="text-gray-600 font-semibold text-xs uppercase tracking-wide mb-1">
-                                                        Контакты
-                                                        </p>
-                                                        <div className="space-y-1">
-                                                            <p className="text-slate-800">проспект Абая, 90</p>
-                                                            <p className="text-slate-600 font-mono">+77777777777</p>
-                                                        </div>
+                                            <div className="border border-gray-200 space-y-3 rounded-xl p-3 bg-gray-100">
+                                                <h3 className="text-gray-600 font-bold text-sm uppercase tracking-wider ">
+                                                    Контактная информация
+                                                </h3>
+                                                <div>
+                                                    <p className="text-gray-600 font-semibold text-xs uppercase tracking-wide mb-1">
+                                                        Директор
+                                                    </p>
+                                                    <h3 className="text-slate-800 text-sm font-bold">Иванов Иван Иванович</h3>
+                                                </div>
+
+                                                <div>
+                                                    <p className="text-gray-600 font-semibold text-xs uppercase tracking-wide mb-1">
+                                                    Контакты
+                                                    </p>
+                                                    <div className="space-y-1">
+                                                        <p className="text-slate-800">проспект Абая, 90</p>
+                                                        <p className="text-slate-600 font-mono">+77777777777</p>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </CardContent>
-                                </Card>
+                                    </div>
+                                </div>
                             </div>
-                        </CardContent>
-                        </Card>
-                    </motion.div>
+                        </motion.div>
+                    </div>
                 </main>
-            </motion.div>
-        </SidebarLayout>
+            </SidebarLayout>
+        </motion.div>
     )
 }
