@@ -84,6 +84,26 @@ const mockData: SchoolData[] = [
     indicator4: 41,
     overallRating: 'low'
   },
+  {
+    id: 8,
+    name: 'СШОД № 15',
+    district: 'Алмалинский район',
+    indicator1: 34,
+    indicator2: 52,
+    indicator3: 28,
+    indicator4: 41,
+    overallRating: 'low'
+  },
+  {
+    id: 9,
+    name: 'СШОД № 15',
+    district: 'Алмалинский район',
+    indicator1: 34,
+    indicator2: 52,
+    indicator3: 28,
+    indicator4: 41,
+    overallRating: 'low'
+  },
 ];
 
 const getPercentageColor = (value: number) => {
@@ -121,8 +141,8 @@ export default function RatingTable() {
   const currentData = mockData.slice(startIndex, endIndex);
 
   return (
-    <div className="w-full max-h-96">
-      <div className="overflow-x-auto overflow-y-auto border border-slate-200 rounded-lg bg-white">
+    <div className="w-full">
+      <div className="max-h-108 overflow-x-auto overflow-y-auto border border-slate-200 rounded-lg bg-white">
         <table className="min-w-full border-separate border-spacing-0 text-sm">
           <thead className="bg-slate-50 sticky top-0 z-10">
             <tr>

@@ -19,6 +19,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion'
 import { mockAuth, MockUser } from '@/lib/mock-auth'
 import { SidebarLayout } from "@/components/sidebar-layout"
+import Image from "next/image"
 
 export default function DashboardPage() {
   const [user, setUser] = useState<MockUser | null>(null)
@@ -206,7 +207,7 @@ export default function DashboardPage() {
         <div className="py-6">
           {/* Welcome Section */}
           <motion.div 
-            className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8"
+            className="relative flex flex-col md:flex-row items-center justify-between bg-blue-200 rounded-xl shadow-sm border border-slate-200 p-4 mb-8 relative overflow-hidden"
             variants={itemVariants}
             whileHover={cardHoverVariants.hover}
           >
@@ -221,6 +222,21 @@ export default function DashboardPage() {
               <p className="text-slate-600">
                 Обзор системы рейтинга образовательных учреждений на сегодня
               </p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, rotate: -5 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              transition={{ delay: 0.4, duration: 0.6, type: "spring" }}
+              className="relative w-full md:w-auto flex justify-center md:justify-end min-w-[200px] h-[180px] md:h-auto"
+            >
+              <Image
+                src="/welcome-image.png"
+                alt="3D illustration of person at desk"
+                width={320}
+                height={180}
+                // className="absolute w-50 right-15"
+                className="w-auto h-40 object-contain"
+              />
             </motion.div>
           </motion.div>
 

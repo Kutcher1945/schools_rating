@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { MapPin, School, Users, TrendingUp, GraduationCap, Search, FileText, Trophy } from "lucide-react"
+import { MapPin, School, Users, TrendingUp, GraduationCap, Search, FileText, Trophy, BookOpen } from "lucide-react"
 import { motion, AnimatePresence } from 'framer-motion'
 import SchoolNumberBarChart from '../../components/school-number-barchart'
 import SchoolRatingBarChart from '../../components/school-rating-barchart'
@@ -14,6 +14,7 @@ import RatingTable from '../../components/rating-table'
 
 export default function RatingPage() {
     const [selectedDistrict, setSelectedDistrict] = useState<string>("all")
+    const [selectedRating, setSelectedRating] = useState<string>("all")
     const [searchQuery, setSearchQuery] = useState<string>("")
     const containerVariants = {
         hidden: { opacity: 0 }, 
@@ -38,6 +39,17 @@ export default function RatingPage() {
         }
     }
 
+    const cardHoverVariants = {
+        hover: { 
+        scale: 1.02,
+        boxShadow: "0 10px 25px -12px rgba(0, 0, 0, 0.25)",
+        transition: {
+            duration: 0.2,
+            ease: [0.4, 0, 0.2, 1] as const
+        }
+        }
+    }
+
     const districts = [
         "Алатауский",
         "Алмалинский",
@@ -49,12 +61,18 @@ export default function RatingPage() {
         "Турксибский",
     ]
 
+    const ratings = [
+        "Высокий",
+        "Средний",
+        "Низкий",
+    ]
+
     return (
         <motion.div 
-        className="min-h-screen"
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
+            className="min-h-screen"
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
         >
             <SidebarLayout>
                 {/* Header */}
@@ -82,19 +100,85 @@ export default function RatingPage() {
                 </motion.header>
 
                 {/* Main Content */}
-                <main className="py-6 px-4 sm:px-6 lg:px-8">
-                    <div className="py-6">
+                <main className="py-4 px-4 sm:px-6 lg:px-8">
+                    <div className="py-0">
                     <motion.div 
                         // className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8"
                         className="p-6 mb-8"
-                        variants={itemVariants}
-                        // whileHover={cardHoverVariants.hover}
+                        variants={containerVariants}
                     >
-                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-1 lg:grid-cols-3 mb-8">
-                            <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col gap-6 p-6">
-                                <div className="space-y-3">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <Card className="border-2 border-emerald-200 bg-gradient-to-br from-emerald-50 to-emerald-100 shadow-lg hover:shadow-xl transition-shadow">
+                                <CardHeader className="pb-0">
+                                    <div className="flex items-center justify-between">
+                                        <CardTitle className="text-emerald-800 flex items-center gap-2">
+                                            <TrendingUp className="h-4 w-4" />
+                                            Высокий рейтинг
+                                        </CardTitle>
+                                        <div className="p-2 bg-emerald-200 rounded-lg">
+                                            <BookOpen className="h-5 w-5 text-emerald-700" />
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="text-2xl font-bold text-emerald-700 mb-1">51 школ</div>
+                                    <p className="text-emerald-600 text-sm">Отличные показатели</p>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-amber-100 shadow-lg hover:shadow-xl transition-shadow">
+                                <CardHeader className="pb-0">
+                                    <div className="flex items-center justify-between">
+                                        <CardTitle className="text-amber-800 flex items-center gap-2">
+                                            <Users className="h-5 w-5" />
+                                            Средний рейтинг
+                                        </CardTitle>
+                                        <div className="p-2 bg-amber-200 rounded-lg">
+                                            <BookOpen className="h-5 w-5 text-amber-700" />
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="text-2xl font-bold text-amber-700 mb-1">126 школ</div>
+                                    <p className="text-amber-600 text-sm">Хорошие показатели</p>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="border-2 border-red-200 bg-gradient-to-br from-red-50 to-red-100 shadow-lg hover:shadow-xl transition-shadow">
+                                <CardHeader className="pb- 0">
+                                    <div className="flex items-center justify-between">
+                                        <CardTitle className="text-red-800 flex items-center gap-2">
+                                            <MapPin className="h-5 w-5" />
+                                            Низкий рейтинг
+                                        </CardTitle>
+                                        <div className="p-2 bg-red-200 rounded-lg">
+                                            <BookOpen className="h-5 w-5 text-red-700" />
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="text-2xl font-bold text-red-700 mb-1">65 школ</div>
+                                    <p className="text-red-600 text-sm">Требуют внимания</p>
+                                </CardContent>
+                            </Card>
+                        </div>
+                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-1 lg:grid-cols-1 mb-8">
+                            <motion.div 
+                                className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col gap-6 p-6"
+                                variants={itemVariants}
+                                whileHover={cardHoverVariants.hover}
+                            > 
+                                <motion.div
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.3, duration: 0.5 }}
+                                    className="space-y-3"
+                                >
                                     <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Фильтры</h3>
-                                    <div className="space-y-2">
+                                    <div className="flex items-center justify-between gap-8">
+
+                                   
+                                    <div className="w-full space-y-2">
                                         <label className="text-xs font-medium text-slate-600 uppercase tracking-wide">Район</label>
                                         <Select value={selectedDistrict} onValueChange={setSelectedDistrict}>
                                         <SelectTrigger className="w-full h-12 bg-white hover:bg-slate-50 border-slate-300">
@@ -113,7 +197,7 @@ export default function RatingPage() {
                                         </SelectContent>
                                         </Select>
                                     </div>
-                                    <div className="space-y-2">
+                                    <div className="w-full space-y-2">
                                         <label className="text-xs font-medium text-slate-600 uppercase tracking-wide">
                                         Поиск школы
                                         </label>
@@ -124,13 +208,38 @@ export default function RatingPage() {
                                             placeholder="Наименование школы"
                                             value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="w-full h-12 pl-10 text-gray-800 bg-white hover:bg-slate-50 border-slate-300 focus:border-emerald-500 focus:ring-emerald-500"
+                                            className="w-full  pl-10 text-gray-800 bg-white hover:bg-slate-50 border-slate-300 focus:border-emerald-500 focus:ring-emerald-500"
                                         />
                                         </div>
                                     </div>
-                                </div>
+                                    <div className="w-full space-y-2">
+                                        <label className="text-xs font-medium text-slate-600 uppercase tracking-wide">Рейтинг школ</label>
+                                        <Select value={selectedRating} onValueChange={setSelectedRating}>
+                                        <SelectTrigger className="w-full h-12 bg-white hover:bg-slate-50 border-slate-300">
+                                            <div className="flex items-center gap-3 text-black">
+                                                <MapPin className="w-4 h-4 text-slate-500" />
+                                                <SelectValue placeholder="Все рейтинги" />
+                                            </div>
+                                        </SelectTrigger>
+                                        <SelectContent className="text-black bg-gray-100">
+                                            <SelectItem value="all">Все рейтинги</SelectItem>
+                                            {ratings.map((rating) => (
+                                            <SelectItem key={rating} value={rating} className="text-black">
+                                                {rating}
+                                            </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                        </Select>
+                                    </div>
+                                    </div>
+                                </motion.div>
 
-                                <div className="space-y-4">
+                                {/* <motion.div 
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.3, duration: 0.5 }}
+                                    className="space-y-4"
+                                >
                                     <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Рейтинг школ</h3>
                                     <motion.div className="space-y-3" variants={itemVariants}>
                                         <div className="flex items-center justify-between p-4 bg-emerald-50 border-2 border-emerald-200 rounded-xl">
@@ -155,19 +264,31 @@ export default function RatingPage() {
                                             <span className="text-red-700 font-bold">65 школ</span>
                                         </div>
                                     </motion.div>
-                                </div>
-                            </div> 
-                            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-auto lg:col-span-2">
+                                </motion.div> */}
+                            </motion.div> 
+                            <motion.div 
+                                className="bg-white rounded-xl shadow-sm border border-slate-200 lg:col-span-2"
+                                variants={itemVariants}
+                                whileHover={cardHoverVariants.hover}
+                            >
                                 <RatingTable/>
-                            </div>
+                            </motion.div>
                         </div>
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-1 lg:grid-cols-2">
-                            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-2 h-full">
+                            <motion.div 
+                                className="bg-white rounded-xl shadow-sm border border-slate-200 p-2 h-full"
+                                variants={itemVariants}
+                                whileHover={cardHoverVariants.hover}
+                            >
                                 <SchoolNumberBarChart/>
-                            </div>
-                            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-2 h-full">
+                            </motion.div>
+                            <motion.div 
+                                className="bg-white rounded-xl shadow-sm border border-slate-200 p-2 h-full"
+                                variants={itemVariants}
+                                whileHover={cardHoverVariants.hover}
+                            >
                                 <SchoolRatingBarChart/>
-                            </div>
+                            </motion.div>
                         </div>
                     </motion.div>
                     </div>

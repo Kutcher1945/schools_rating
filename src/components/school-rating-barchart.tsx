@@ -58,7 +58,7 @@ export default function SchoolRatingBarChart() {
             <LabelList dataKey="red" position="inside" fill="white" />
           </Bar>
           {/* total values on the right */}
-          <Bar dataKey="total" fill="transparent" >
+          <Bar dataKey="total" fill="transparent" radius={[0, 6, 6, 0]} >
             <LabelList dataKey="total" position="right" />
           </Bar>
         </BarChart>
