@@ -64,6 +64,26 @@ const mockData: SchoolData[] = [
     indicator4: 41,
     overallRating: 'low'
   },
+  {
+    id: 6,
+    name: 'СШОД № 15',
+    district: 'Алмалинский район',
+    indicator1: 34,
+    indicator2: 52,
+    indicator3: 28,
+    indicator4: 41,
+    overallRating: 'low'
+  },
+  {
+    id: 7,
+    name: 'СШОД № 15',
+    district: 'Алмалинский район',
+    indicator1: 34,
+    indicator2: 52,
+    indicator3: 28,
+    indicator4: 41,
+    overallRating: 'low'
+  },
 ];
 
 const getPercentageColor = (value: number) => {
@@ -101,10 +121,10 @@ export default function RatingTable() {
   const currentData = mockData.slice(startIndex, endIndex);
 
   return (
-    <div className="w-full">
-      <div className="overflow-x-auto border border-slate-200 rounded-lg bg-white">
-        <table className="text-sm w-full">
-          <thead className="bg-slate-50">
+    <div className="w-full max-h-96">
+      <div className="overflow-x-auto overflow-y-auto border border-slate-200 rounded-lg bg-white">
+        <table className="min-w-full border-separate border-spacing-0 text-sm">
+          <thead className="bg-slate-50 sticky top-0 z-10">
             <tr>
               <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider border-b border-slate-200">
                 Наименование

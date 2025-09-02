@@ -15,13 +15,13 @@ const data = [
 
 export default function SchoolNumberBarChart() {
   return (
-    <div className="w-full h-[400px]">
+    <div className="w-full h-[450px] p-2 pb-5">
       <h2 className="text-center text-lg font-semibold mb-4 text-black">Количество школ по районам</h2>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={data}
           layout="vertical"
-          margin={{ top: 10, right: 10, left: 70, bottom: 20 }}
+          margin={{ top: 10, right: 10, left: 70, bottom: 30 }}
         >
           <CartesianGrid strokeDasharray="3 3" horizontal={false} />
           <XAxis type="number"/>

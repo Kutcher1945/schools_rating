@@ -31,7 +31,7 @@ export default function SchoolRatingBarChart() {
         <BarChart
           data={data}
           layout="vertical"
-          margin={{ top: 10, right: 10, left: 70, bottom: 20 }}
+          margin={{ top: 10, right: 10, left: 70, bottom: 30 }}
           barCategoryGap="10%"   // уменьшает/увеличивает расстояние между барами
           barSize={50}
         >

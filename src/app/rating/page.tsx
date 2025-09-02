@@ -85,12 +85,13 @@ export default function RatingPage() {
                 <main className="py-6 px-4 sm:px-6 lg:px-8">
                     <div className="py-6">
                     <motion.div 
-                        className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8"
+                        // className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8"
+                        className="p-6 mb-8"
                         variants={itemVariants}
                         // whileHover={cardHoverVariants.hover}
                     >
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-1 lg:grid-cols-3 mb-8">
-                            <div className="flex flex-col gap-6">
+                            <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col gap-6 p-6">
                                 <div className="space-y-3">
                                     <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Фильтры</h3>
                                     <div className="space-y-2">
@@ -156,15 +157,15 @@ export default function RatingPage() {
                                     </motion.div>
                                 </div>
                             </div> 
-                            <div className="overflow-x-auto lg:col-span-2">
+                            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-auto lg:col-span-2">
                                 <RatingTable/>
                             </div>
                         </div>
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-1 lg:grid-cols-2">
-                            <div className="p-2 h-full">
+                            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-2 h-full">
                                 <SchoolNumberBarChart/>
                             </div>
-                            <div className="p-2 h-full">
+                            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-2 h-full">
                                 <SchoolRatingBarChart/>
                             </div>
                         </div>
