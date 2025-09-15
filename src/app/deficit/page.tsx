@@ -376,7 +376,7 @@ export default function DeficitPage() {
                                 variants={itemVariants}
                                 whileHover={cardHoverVariants.hover}
                             >
-                                {/* <MapForecast
+                                <MapForecast
                                     balanceData={balanceData}
                                     schoolsData={schoolsData}
                                     filters={{
@@ -390,7 +390,7 @@ export default function DeficitPage() {
                                         year: Number(selectedYear),
                                     }}
                                     districtsData={districtsData}
-                                /> */}
+                                />
                             </motion.div>
                             <motion.div 
                                 className="bg-white rounded-xl text-black shadow-sm border border-slate-200"

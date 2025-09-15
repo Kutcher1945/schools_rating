@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import maplibregl, { Map, Popup, LngLatLike, MapMouseEvent } from "maplibre-gl";
+import maplibregl, { Map, Popup, LngLatLike, MapMouseEvent, MapLayerMouseEvent } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 // Import GeoJSON types for better compatibility with MapLibre's internal types
 import {
@@ -25,7 +25,7 @@ interface Filters {
 
 // --- FeatureProperties Type ---
 // This will extend GeoJsonProperties for better compatibility
-interface CustomFeatureProperties extends GeoJsonProperties {
+type CustomFeatureProperties = (GeoJsonProperties extends object ? GeoJsonProperties : object) & {
   district?: string;
   name_ru?: string;
   organization_name?: string;
@@ -47,7 +47,7 @@ type CustomFeatureGeometry = Point | Polygon | MultiPolygon;
 
 // --- Feature Type ---
 // Now using GeoJSONFeature with our custom properties and geometry
-interface Feature extends GeoJSONFeature<CustomFeatureGeometry, CustomFeatureProperties> {}
+type Feature = GeoJSONFeature<CustomFeatureGeometry, CustomFeatureProperties>;
 
 interface MapForecastProps {
   balanceData: Feature[];
@@ -247,7 +247,7 @@ function MapForecast({
           schoolsClickListenerRef.current = null;
         }
 
-        const newClickListener = (e: MapMouseEvent) => {
+        const newClickListener = (e: MapLayerMouseEvent) => {
           if (!e.features || !e.features.length) return;
           const feature = e.features[0];
 
