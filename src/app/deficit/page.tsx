@@ -370,9 +370,10 @@ export default function DeficitPage() {
                             </motion.div> 
                         </div>
                         
-                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-1 lg:grid-cols-2">
+                        {/* <div className="grid grid-cols-1 gap-6 sm:grid-cols-1 lg:grid-cols-2"> */}
+                        {/* <div className=""> */}
                             <motion.div 
-                                className="bg-white rounded-xl shadow-sm border border-slate-200 h-full"
+                                className="bg-white rounded-xl shadow-sm border border-slate-200 h-full mb-8"
                                 variants={itemVariants}
                                 whileHover={cardHoverVariants.hover}
                             >
@@ -392,6 +393,8 @@ export default function DeficitPage() {
                                     districtsData={districtsData}
                                 />
                             </motion.div>
+                        {/* </div> */}
+                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-1 lg:grid-cols-2">
                             <motion.div 
                                 className="bg-white rounded-xl text-black shadow-sm border border-slate-200"
                                 variants={itemVariants}
@@ -404,7 +407,7 @@ export default function DeficitPage() {
                                 />
                             </motion.div>
                         </div>
-                    </motion.div>
+                        </motion.div>
                     </div>
                 </main>
             </SidebarLayout>

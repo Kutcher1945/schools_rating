@@ -396,19 +396,19 @@ function MapForecast({
 
   return (
     <div className="rounded-xl p-4">
-      <h3 className="mb-2 text-[#1e293b]">Карта прогноза загруженности ({filters.year})</h3>
-      <div className="w-full rounded-lg overflow-hidden border border-[#e2e8f0]">
+      <h3 className="mb-2 text-[#1e293b] font-semibold">Карта прогноза загруженности ({filters.year})</h3>
+      <div className="w-full rounded-lg overflow-hidden ">
         <div
           style={{
             display: "flex",
             gap: "8px",
             padding: "8px",
             borderBottom: "1px solid #e5e7eb",
-            background: "#fafafa",
+            background: "#ffffffff",
           }}
         >
           <button
-            className="bg-[#3b82f6] text-white p-2 rounded-sm coursor-pointer transition-all duration-200ms hover:bg-[#2563eb] active:bg-[#1d4ed8]"
+            className="bg-white text-white p-2 rounded-sm coursor-pointer transition-all duration-200ms hover:bg-[#2563eb] active:bg-[#1d4ed8]"
             onClick={() => setMode("polygons")}
             style={{
               backgroundColor: mode === "polygons" ? "#1d4ed8" : "#3b82f6",
@@ -431,7 +431,8 @@ function MapForecast({
 
       <div className="mt-4 p-4 bg-[#f8fafc] rounded-sm text-sm">
         <h4 className="text-[#1e293b]">Легенда прогноза</h4>
-        <div className="grid grid-cols-1 lg:grid-cols-3 sm:grid-cols-2 gap-8 mb-4 mt-4">
+        <div className="flex items-center justify-between">
+        <div className="grid grid-cols-1 lg:grid-cols-3 sm:grid-cols-2 gap-4 mb-4 mt-4">
           <div className="flex items-center gap-2 text-[#1e293b]">
             <div
               className="w-[16px] h-[16px] bg-[#EF4444] rounded-full"
@@ -450,6 +451,7 @@ function MapForecast({
             ></div>
             <span>Сбалансированная загрузка</span>
           </div>
+        </div>
         </div>
         <p className="text-[#6b7280] italic">
           Размер круга зависит от величины дефицита/профицита
