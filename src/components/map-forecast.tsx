@@ -1,8 +1,17 @@
-import { useState, useEffect, useRef } from "react";
-import maplibregl, { Map, Popup } from "maplibre-gl";
+import { useState, useEffect, useRef, useCallback } from "react";
+import maplibregl, { Map, Popup, LngLatLike, MapMouseEvent } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+// Import GeoJSON types for better compatibility with MapLibre's internal types
+import {
+  Feature as GeoJSONFeature,
+  Point,
+  Polygon,
+  MultiPolygon,
+  Geometry,
+  GeoJsonProperties,
+} from "geojson";
 
-// --- Types ---
+// --- Filters Type (Remains the same) ---
 interface Filters {
   district: string;
   year: number;
@@ -14,8 +23,9 @@ interface Filters {
   };
 }
 
-interface FeatureProperties {
-  [key: string]: any;
+// --- FeatureProperties Type ---
+// This will extend GeoJsonProperties for better compatibility
+interface CustomFeatureProperties extends GeoJsonProperties {
   district?: string;
   name_ru?: string;
   organization_name?: string;
@@ -23,24 +33,27 @@ interface FeatureProperties {
   education_type?: string;
   deficit?: number;
   surplus?: number;
+  [key: `deficit_${number}`]: number | undefined;
+  [key: `surplus_${number}`]: number | undefined;
+  color?: string;
+  statusText?: string;
+  radius?: number;
+  rating?: number;
 }
 
-interface FeatureGeometry {
-  type: "Point" | "Polygon" | "MultiPolygon";
-  coordinates: any;
-}
+// --- FeatureGeometry Type ---
+// This needs to be compatible with GeoJSON Geometry types
+type CustomFeatureGeometry = Point | Polygon | MultiPolygon;
 
-interface Feature {
-  type: "Feature";
-  geometry: FeatureGeometry;
-  properties: FeatureProperties;
-}
+// --- Feature Type ---
+// Now using GeoJSONFeature with our custom properties and geometry
+interface Feature extends GeoJSONFeature<CustomFeatureGeometry, CustomFeatureProperties> {}
 
 interface MapForecastProps {
   balanceData: Feature[];
   schoolsData: Feature[];
   filters: Filters;
-  districtsData: Feature[];
+  districtsData: Feature[]; // Assuming districts also follow the new Feature type
 }
 
 // --- Component ---
@@ -62,7 +75,7 @@ function MapForecast({
     const filtered = balanceData.filter((item) => {
       const matchesDistrict =
         filters.district === "Все районы" ||
-        item.properties.district === filters.district;
+        item.properties?.district === filters.district; // Use optional chaining for properties
 
       return matchesDistrict;
     });
@@ -75,21 +88,23 @@ function MapForecast({
     const fs = schoolsData.filter((school) => {
       const matchesDistrict =
         filters.district === "Все районы" ||
-        school.properties.district === filters.district;
+        school.properties?.district === filters.district; // Use optional chaining
 
       const matchesSearch =
         !filters.searchSchool ||
-        (school.properties.organization_name || "")
+        (String(school.properties?.organization_name || "") // Optional chaining
           .toLowerCase()
-          .includes(String(filters.searchSchool).toLowerCase());
+          .includes(String(filters.searchSchool).toLowerCase()));
 
-      const isGov = !school.properties.is_private;
-      const isComfort = school.properties.education_type === "комфортная школа";
-      const isPrivate = school.properties.is_private;
+      const isPrivate = school.properties?.is_private === true; // Optional chaining
+      const isComfort = school.properties?.education_type === "комфортная школа"; // Optional chaining
+      const isGov = !isPrivate;
+
       const matchesCategories =
         (filters.categories?.gov && isGov) ||
         (filters.categories?.comfort && isComfort) ||
-        (filters.categories?.private && isPrivate);
+        (filters.categories?.private && isPrivate) ||
+        (!filters.categories?.gov && !filters.categories?.comfort && !filters.categories?.private);
 
       return matchesDistrict && matchesSearch && matchesCategories;
     });
@@ -97,37 +112,182 @@ function MapForecast({
   }, [schoolsData, filters]);
 
   // --- Helpers ---
-  const getStatusColor = (item: Feature): string => {
-    const year = filters.year;
-    const deficit =
-      item.properties[`deficit_${year}`] ||
-      item.properties.deficit ||
-      0;
-    const surplus =
-      item.properties[`surplus_${year}`] ||
-      item.properties.surplus ||
-      0;
+  const getStatusColor = useCallback(
+    (item: Feature): string => {
+      const year = filters.year;
+      // Access properties safely, defaulting to 0 if undefined
+      const deficit =
+        (item.properties?.[`deficit_${year}`] as number | undefined) || // Use optional chaining for properties
+        (item.properties?.deficit as number | undefined) ||
+        0;
+      const surplus =
+        (item.properties?.[`surplus_${year}`] as number | undefined) || // Optional chaining
+        (item.properties?.surplus as number | undefined) ||
+        0;
 
-    if (deficit > 0) return "#EF4444";
-    if (surplus > 0) return "#10B981";
-    return "#3B82F6";
-  };
+      if (deficit > 0) return "#EF4444";
+      if (surplus > 0) return "#10B981";
+      return "#3B82F6";
+    },
+    [filters.year]
+  );
 
-  const getStatusText = (item: Feature): string => {
-    const year = filters.year;
-    const deficit =
-      item.properties[`deficit_${year}`] ||
-      item.properties.deficit ||
-      0;
-    const surplus =
-      item.properties[`surplus_${year}`] ||
-      item.properties.surplus ||
-      0;
+  const getStatusText = useCallback(
+    (item: Feature): string => {
+      const year = filters.year;
+      // Access properties safely, defaulting to 0 if undefined
+      const deficit =
+        (item.properties?.[`deficit_${year}`] as number | undefined) || // Optional chaining
+        (item.properties?.deficit as number | undefined) ||
+        0;
+      const surplus =
+        (item.properties?.[`surplus_${year}`] as number | undefined) || // Optional chaining
+        (item.properties?.surplus as number | undefined) ||
+        0;
 
-    if (deficit > 0) return `Дефицит: ${deficit} мест`;
-    if (surplus > 0) return `Профицит: ${surplus} мест`;
-    return "Сбалансированная загрузка";
-  };
+      if (deficit > 0) return `Дефицит: ${deficit} мест`;
+      if (surplus > 0) return `Профицит: ${surplus} мест`;
+      return "Сбалансированная загрузка";
+    },
+    [filters.year]
+  );
+
+  // Store the actual click listener function in a ref to remove it later
+  const schoolsClickListenerRef = useRef<((e: MapMouseEvent) => void) | null>(null);
+
+  // --- Add Forecast Layer (Memoized with useCallback) ---
+  const addForecastLayer = useCallback(
+    (data: Feature[]) => {
+      if (!map.current || !map.current.isStyleLoaded()) return;
+
+      ["forecast-circles", "forecast-polygons", "schools-forecast"].forEach(
+        (id) => {
+          if (map.current?.getLayer(id)) map.current.removeLayer(id);
+        }
+      );
+      ["forecast", "forecast-polygons", "schools-forecast"].forEach((id) => {
+        if (map.current?.getSource(id)) map.current.removeSource(id);
+      });
+
+      if (mode === "polygons") {
+        const asPolygons = data.filter(
+          (f) =>
+            f.geometry &&
+            (f.geometry.type === "Polygon" ||
+              f.geometry.type === "MultiPolygon")
+        );
+        map.current?.addSource("forecast-polygons", {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: asPolygons.map((item) => ({
+              type: "Feature",
+              geometry: item.geometry,
+              properties: {
+                ...item.properties,
+                color: getStatusColor(item),
+                statusText: getStatusText(item),
+              } as CustomFeatureProperties, // Assert properties type
+            })),
+          },
+        });
+        map.current?.addLayer({
+          id: "forecast-polygons",
+          type: "fill",
+          source: "forecast-polygons",
+          paint: {
+            "fill-color": ["get", "color"],
+            "fill-opacity": 0.35,
+          },
+        });
+      } else {
+        map.current?.addSource("schools-forecast", {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: filteredSchools.map((s) => ({
+              type: "Feature",
+              geometry: {
+                type: "Point",
+                coordinates: s.geometry.coordinates as LngLatLike, // Type assertion here
+              } as Point, // Assert Point type
+              properties: {
+                organization_name: s.properties?.organization_name, // Optional chaining
+                district: s.properties?.district, // Optional chaining
+                is_private: s.properties?.is_private, // Optional chaining
+                education_type: s.properties?.education_type, // Optional chaining
+                color: s.properties?.is_private === true // Optional chaining & Explicit comparison
+                  ? "#3B82F6"
+                  : s.properties?.education_type === "комфортная школа" // Optional chaining
+                  ? "#F59E0B"
+                  : "#10B981",
+                radius: 8,
+              } as CustomFeatureProperties, // Assert properties type
+            })),
+          },
+        });
+        map.current?.addLayer({
+          id: "schools-forecast",
+          type: "circle",
+          source: "schools-forecast",
+          paint: {
+            "circle-radius": ["get", "radius"],
+            "circle-color": ["get", "color"],
+            "circle-stroke-color": ["get", "color"],
+            "circle-stroke-width": 2,
+            "circle-opacity": 0.8,
+          },
+        });
+      }
+
+      if (mode === "schools") {
+        // Remove existing listener before adding a new one
+        if (map.current && schoolsClickListenerRef.current) {
+          map.current.off("click", "schools-forecast", schoolsClickListenerRef.current);
+          schoolsClickListenerRef.current = null;
+        }
+
+        const newClickListener = (e: MapMouseEvent) => {
+          if (!e.features || !e.features.length) return;
+          const feature = e.features[0];
+
+          // Safely access properties with type guards or assertions
+          const properties = feature.properties as CustomFeatureProperties;
+          const { organization_name, district, rating, education_type } = properties;
+
+          // Ensure coordinates are of the expected type LngLatLike for a Point
+          const pointGeometry = feature.geometry as Point;
+          const coordinates = pointGeometry.coordinates as LngLatLike;
+
+          // Build popup content
+          const content = `
+            <div style="font-family:sans-serif;font-size:14px; color:black;">
+              <strong>${organization_name || "Школа"}</strong><br/>
+              Район: ${district || "—"}<br/>
+              Тип: ${education_type || "—"}<br/>
+              Рейтинг: ${rating ?? "—"}
+            </div>
+          `;
+          new Popup({ closeButton: true, closeOnClick: true })
+            .setLngLat(coordinates)
+            .setHTML(content)
+            .addTo(map.current!);
+        };
+
+        map.current?.on("click", "schools-forecast", newClickListener);
+        schoolsClickListenerRef.current = newClickListener; // Store the listener
+
+        // Optional: change cursor on hover
+        map.current?.on("mouseenter", "schools-forecast", () => {
+          map.current!.getCanvas().style.cursor = "pointer";
+        });
+        map.current?.on("mouseleave", "schools-forecast", () => {
+          map.current!.getCanvas().style.cursor = "";
+        });
+      }
+    },
+    [mode, filteredSchools, getStatusColor, getStatusText] // Dependencies for useCallback
+  );
 
   // --- Init Map ---
   useEffect(() => {
@@ -135,7 +295,6 @@ function MapForecast({
 
     map.current = new maplibregl.Map({
       container: mapContainer.current as HTMLDivElement,
-      // style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
       style: `https://api.maptiler.com/maps/basic-v2/style.json?key=${API_KEY}`,
       center: [76.889709, 43.238949],
       zoom: 11,
@@ -151,9 +310,9 @@ function MapForecast({
               type: "Feature",
               geometry: district.geometry,
               properties: {
-                name: district.properties.name_ru,
-                ...district.properties,
-              },
+                name: district.properties?.name_ru, // Optional chaining
+                ...(district.properties || {}), // Ensure properties is an object
+              } as CustomFeatureProperties, // Assert properties type
             })),
           },
         });
@@ -207,135 +366,7 @@ function MapForecast({
         map.current = null;
       }
     };
-  }, [districtsData, balanceData]);
-
-  // --- Add Forecast Layer ---
-  const addForecastLayer = (data: Feature[]) => {
-    if (!map.current || !map.current.isStyleLoaded()) return;
-
-    ["forecast-circles", "forecast-polygons", "schools-forecast"].forEach(
-      (id) => {
-        if (map.current?.getLayer(id)) map.current.removeLayer(id);
-      }
-    );
-    ["forecast", "forecast-polygons", "schools-forecast"].forEach((id) => {
-      if (map.current?.getSource(id)) map.current.removeSource(id);
-    });
-
-    if (mode === "polygons") {
-      const asPolygons = data.filter(
-        (f) =>
-          f.geometry &&
-          (f.geometry.type === "Polygon" ||
-            f.geometry.type === "MultiPolygon")
-      );
-      map.current?.addSource("forecast-polygons", {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: asPolygons.map((item) => ({
-            type: "Feature",
-            geometry: item.geometry,
-            properties: {
-              ...item.properties,
-              color: getStatusColor(item),
-              statusText: getStatusText(item),
-            },
-          })),
-        },
-      });
-      map.current?.addLayer({
-        id: "forecast-polygons",
-        type: "fill",
-        source: "forecast-polygons",
-        paint: {
-          "fill-color": ["get", "color"],
-          "fill-opacity": 0.35,
-        },
-      });
-    } else {
-      map.current?.addSource("schools-forecast", {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: filteredSchools.map((s) => ({
-            type: "Feature",
-            geometry: {
-              type: "Point",
-              // coordinates: [
-              //   s.geometry.coordinates[0],
-              //   s.geometry.coordinates[1],
-              // ],
-              coordinates: [...s.geometry.coordinates],
-            },
-            properties: {
-              // ...s.properties,
-              organization_name: s.properties.organization_name,
-              district: s.properties.district,
-              is_private: s.properties.is_private,
-              education_type: s.properties.education_type,
-              color: s.properties.is_private
-                ? "#3B82F6"
-                : s.properties.education_type === "комфортная школа"
-                ? "#F59E0B"
-                : "#10B981",
-              radius: 8,
-            },
-          })),
-        },
-      });
-      map.current?.addLayer({
-        id: "schools-forecast",
-        type: "circle",
-        source: "schools-forecast",
-        paint: {
-          "circle-radius": ["get", "radius"],
-          "circle-color": ["get", "color"],
-          "circle-stroke-color": ["get", "color"],
-          "circle-stroke-width": 2,
-          "circle-opacity": 0.8,
-        },
-      });
-    }
-    if (mode === "schools") {
-      map.current?.off("click", "schools-forecast", () => {});
-
-      map.current?.on("click", "schools-forecast", (e) => {
-        if (!e.features || !e.features.length) return;
-        const feature = e.features[0];
-
-      const { organization_name, district, rating, education_type } = feature.properties as {
-        organization_name?: string;
-        district?: string;
-        rating?: number;
-        education_type?: string;
-      };
-
-      const coordinates = (feature.geometry as any).coordinates.slice();
-
-      // Build popup content
-      const content = `
-        <div style="font-family:sans-serif;font-size:14px; color:black;">
-          <strong>${organization_name || "Школа"}</strong><br/>
-          Район: ${district || "—"}<br/>
-          Тип: ${education_type || "—"}<br/>
-          Рейтинг: ${rating ?? "—"}
-        </div>
-      `;
-      new Popup({ closeButton: true, closeOnClick: true })
-      .setLngLat(coordinates)
-      .setHTML(content)
-      .addTo(map.current!);
-    })
-      // Optional: change cursor on hover
-      map.current?.on("mouseenter", "schools-forecast", () => {
-        map.current!.getCanvas().style.cursor = "pointer";
-      });
-      map.current?.on("mouseleave", "schools-forecast", () => {
-        map.current!.getCanvas().style.cursor = "";
-      });
-    };
-  };
+  }, [districtsData, balanceData, addForecastLayer]);
 
   // --- Update Layers ---
   useEffect(() => {
@@ -350,12 +381,19 @@ function MapForecast({
       m.once("idle", update); // ensures style and sources are ready
     }
 
+    // Cleanup: remove the event listener when the component unmounts
+    // or if dependencies change and a new listener is to be added.
     return () => {
       m.off("idle", update);
+      // Also, explicitly remove click handlers for schools-forecast if mode changes
+      // to avoid multiple handlers on the same layer.
+      if (map.current && schoolsClickListenerRef.current) {
+        map.current.off("click", "schools-forecast", schoolsClickListenerRef.current);
+        schoolsClickListenerRef.current = null;
+      }
     };
-  }, [filteredData, filteredSchools, filters.year, mode]);
+  }, [filteredData, filteredSchools, filters.year, mode, addForecastLayer]);
 
-  
   return (
     <div className="rounded-xl p-4">
       <h3 className="mb-2 text-[#1e293b]">Карта прогноза загруженности ({filters.year})</h3>

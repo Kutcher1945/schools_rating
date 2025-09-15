@@ -23,7 +23,7 @@ interface Filters {
 }
 
 interface FeatureProperties {
-  [key: string]: any
+  [key: string]: unknown
   district?: string
   District?: string
   district_name_ru?: string
@@ -40,7 +40,7 @@ interface FeatureProperties {
   is_comfort?: boolean
   is_public?: boolean
   is_any_gov?: boolean
-  __normKeys?: Record<string, any>
+  __normKeys?: Record<string, unknown>
 }
 
 interface Feature {
@@ -76,9 +76,11 @@ const LineChartYear: React.FC<LineChartYearProps> = ({
       YEARS.map(y => [y, 0])
     )
 
-    const toNum = (v: any): number => {
+    // Explicitly define 'v' as unknown, then perform type checks
+    const toNum = (v: unknown): number => {
       if (v === null || v === undefined || v === '') return 0
       if (typeof v === 'number') return Number.isFinite(v) ? v : 0
+      // Ensure v is treated as a string before replace/parseFloat
       const n = parseFloat(String(v).replace(',', '.'))
       return Number.isFinite(n) ? n : 0
     }
@@ -92,6 +94,7 @@ const LineChartYear: React.FC<LineChartYearProps> = ({
     if (looksLong) {
       balanceData.forEach(item => {
         const p = item?.properties || {}
+        // Type assertion for p.year, p.Year, p.YEAR as unknown first, then to string
         const y = Number(p.year ?? p.Year ?? p.YEAR)
         if (!YEARS.includes(y)) return
 
@@ -109,7 +112,8 @@ const LineChartYear: React.FC<LineChartYearProps> = ({
           p.demand_public_6_17,
           p.demand_6_17,
         ]
-        const val = candidates.find(v => v !== undefined)
+        // val is unknown here, passed to toNum
+        const val = candidates.find((v: unknown) => v !== undefined)
         demandTotals[y] += toNum(val)
       })
     } else {
@@ -121,6 +125,7 @@ const LineChartYear: React.FC<LineChartYearProps> = ({
           filters.district === 'Все районы' || district === filters.district
         if (!matchesDistrict) return
         YEARS.forEach(y => {
+          // val is unknown here, passed to toNum
           const val =
             p[`demand_public_6_17_${y}`] ??
             p[`demand_public_6_17${y}`] ??
@@ -140,7 +145,8 @@ const LineChartYear: React.FC<LineChartYearProps> = ({
     const getStatusValue = (props: FeatureProperties, year: number): number => {
       if (!props) return 0
       if (!props.__normKeys) {
-        props.__normKeys = {}
+        // Ensure that props.__normKeys is initialized correctly
+        props.__normKeys = {} as Record<string, unknown>
         for (const [k, v] of Object.entries(props)) {
           const nk = String(k).toLowerCase().replace(/\s+/g, '').trim()
           props.__normKeys[nk] = v
@@ -157,7 +163,9 @@ const LineChartYear: React.FC<LineChartYearProps> = ({
       ].map(k => k.toLowerCase().replace(/\s+/g, ''))
 
       for (const t of targets) {
-        if (t in props.__normKeys) return toNum(props.__normKeys[t])
+        if (props.__normKeys && t in props.__normKeys) {
+          return toNum(props.__normKeys[t])
+        }
       }
       for (const [nk, v] of Object.entries(props.__normKeys)) {
         if (new RegExp(`^status[_-]?${year}$`, 'i').test(nk)) return toNum(v)
@@ -175,9 +183,9 @@ const LineChartYear: React.FC<LineChartYearProps> = ({
 
       const matchesSearch =
         !filters.searchSchool ||
-        (p.organization_name || '')
+        (String(p.organization_name || '') // Ensure p.organization_name is treated as string
           .toLowerCase()
-          .includes(String(filters.searchSchool).toLowerCase())
+          .includes(String(filters.searchSchool).toLowerCase()))
 
       const et = String(p.education_type ?? p.school_type ?? '').toLowerCase()
       const isPrivate = p.is_private === true || /частн/.test(et)
@@ -289,4 +297,4 @@ const LineChartYear: React.FC<LineChartYearProps> = ({
   )
 }
 
-export default LineChartYear
+export default LineChartYear;

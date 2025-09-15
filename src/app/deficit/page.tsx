@@ -137,8 +137,6 @@ export default function DeficitPage() {
         )
     }
 
-    console.log(balanceData);
-
     return (
         <motion.div 
             className="min-h-screen"
@@ -179,6 +177,7 @@ export default function DeficitPage() {
                         className="p-6 mb-8"
                         variants={containerVariants}
                     >
+                        {/* Indicators */}
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 items-center justify-between text-center">
                             <motion.div 
                                 className="p-4 border rounded-lg border border-red-300 bg-red-100 shadow-sm"
@@ -245,40 +244,7 @@ export default function DeficitPage() {
                             </motion.div>
 
                         </div>
-                        {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 items-center justify-between text-center">
-                            <div className="p-4 border rounded-lg border shadow-sm">
-                                <p className="text-gray-600">
-                                    Всего школ
-                                </p>
-                                <div className="text-2xl font-bold text-blue-600">
-                                    392
-                                </div>
-                            </div>
-                            <div className="p-4 border rounded-lg border shadow-sm">
-                                <p className="text-gray-600">
-                                    Государственные
-                                </p>
-                                <div className="text-2xl font-bold text-blue-600">
-                                    219
-                                </div>
-                            </div>
-                            <div className="p-4 border rounded-lg border shadow-sm">
-                                <p className="text-gray-600">
-                                    Комфортные
-                                </p>  
-                                <div className="text-2xl font-bold text-blue-600">
-                                    21
-                                </div>
-                            </div>
-                            <div className="p-4 border rounded-lg border shadow-sm">
-                                <p className="text-gray-600">
-                                    Частные
-                                </p>
-                                <div className="text-2xl font-bold text-blue-600">
-                                    152
-                                </div>
-                            </div>
-                        </div> */}
+                        {/* Filters */}
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-1 lg:grid-cols-1 mb-8">
                             <motion.div 
                                 className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col gap-6 p-6"
@@ -403,14 +369,14 @@ export default function DeficitPage() {
                                 </motion.div>
                             </motion.div> 
                         </div>
+                        
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-1 lg:grid-cols-2">
                             <motion.div 
                                 className="bg-white rounded-xl shadow-sm border border-slate-200 h-full"
                                 variants={itemVariants}
                                 whileHover={cardHoverVariants.hover}
                             >
-                                {/* <RatingTable/> */}
-                                <MapForecast
+                                {/* <MapForecast
                                     balanceData={balanceData}
                                     schoolsData={schoolsData}
                                     filters={{
@@ -424,7 +390,7 @@ export default function DeficitPage() {
                                         year: Number(selectedYear),
                                     }}
                                     districtsData={districtsData}
-                                />
+                                /> */}
                             </motion.div>
                             <motion.div 
                                 className="bg-white rounded-xl text-black shadow-sm border border-slate-200"
