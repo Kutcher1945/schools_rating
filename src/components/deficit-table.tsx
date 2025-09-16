@@ -107,7 +107,7 @@ const DeficitTable: React.FC<DeficitTableProps> = ({ schoolsData, filters }) => 
 
   return (
     <div className="p-4 rounded-sm h-[500px]">
-      <h3 className="text-[#1e293b]">Список школ</h3>
+      <h3 className="text-[#1e293b] mb-2 font-semibold text-center">Список школ</h3>
       <div className="h-full overflow-x-auto overflow-y-auto">
         <table className="w-full h-full text-sm border-collapse">
           <thead className="sticky top-0 z-10">
@@ -189,7 +189,7 @@ const DeficitTable: React.FC<DeficitTableProps> = ({ schoolsData, filters }) => 
                 {/* <td className="school-name">{school.properties.organization_name}</td> */}
                 <td className="px-3 py-3 border-b border-slate-100 text-gray-800">{school.properties.organization_name}</td>
                 <td className="text-[#4b5563]">{school.properties.district}</td>
-                <td >
+                <td className="p-3">
                   <span
                     className="px-2 py-1 rounded text-white text-xs font-medium"
                     style={{ backgroundColor: getSchoolTypeColor(school) }}

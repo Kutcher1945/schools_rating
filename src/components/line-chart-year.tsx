@@ -84,7 +84,7 @@ const LineChartYear: React.FC<LineChartYearProps> = ({
       const n = parseFloat(String(v).replace(',', '.'))
       return Number.isFinite(n) ? n : 0
     }
-
+    console.log("schoolsData:", schoolsData)
     // ---- спрос детей 6–17 ----
     const looksLong = balanceData?.some(it => {
       const p = it?.properties || {}
@@ -254,7 +254,7 @@ const LineChartYear: React.FC<LineChartYearProps> = ({
 
   return (
     <div className="line-chart-container rounded-lg p-4">
-      <h3 className='mb-4 text-[#1e293b]'>Прогноз спроса государственных школьных мест</h3>
+      <h3 className='mb-4 text-[#1e293b] font-semibold text-center'>Прогноз спроса государственных школьных мест</h3>
       <div className="chart-wrapper mb-4 w-full overflow-hidden text-xs">
         <ResponsiveContainer width="100%" height={400}>
           <LineChart data={chartData}>
