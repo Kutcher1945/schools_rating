@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import SchoolNumberBarChart from '../../components/school-number-barchart'
 // import SchoolRatingBarChart from '../../components/school-rating-barchart'
 import LineChartYear from '../../components/line-chart-year'
+import DeficitTable from '../../components/deficit-table'
 import RatingTable from '../../components/rating-table'
 import MapForecast from '../../components/map-forecast'
 
@@ -69,14 +70,14 @@ export default function DeficitPage() {
     }
 
     const districts = [
-        "Алатауский",
-        "Алмалинский",
-        "Ауэзовский",
-        "Бостандыкский",
-        "Жетысуский",
-        "Медеуский",
-        "Наурызбайский",
-        "Турксибский",
+        "Алатауский район",
+        "Алмалинский район",
+        "Ауэзовский район",
+        "Бостандыкский район",
+        "Жетысуский район",
+        "Медеуский район",
+        "Наурызбайский район",
+        "Турксибский район",
     ]
 
     const years = [
@@ -395,6 +396,16 @@ export default function DeficitPage() {
                             </motion.div>
                         {/* </div> */}
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-1 lg:grid-cols-2">
+                            <motion.div 
+                                className="bg-white rounded-xl text-black shadow-sm border border-slate-200"
+                                variants={itemVariants}
+                                whileHover={cardHoverVariants.hover}
+                            >
+                                <DeficitTable
+                                    schoolsData={schoolsData}
+                                    filters={filters}
+                                />
+                            </motion.div>
                             <motion.div 
                                 className="bg-white rounded-xl text-black shadow-sm border border-slate-200"
                                 variants={itemVariants}
