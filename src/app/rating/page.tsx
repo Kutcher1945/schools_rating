@@ -6,13 +6,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { MapPin, School, Users, TrendingUp, GraduationCap, Search, FileText, Trophy, BookOpen } from "lucide-react"
-import { motion, AnimatePresence } from 'framer-motion'
+import { MapPin, School, Users, TrendingUp, GraduationCap, Search, FileText, Trophy, BookOpen, Target, Star, X, Building, Award, Zap, Shield } from "lucide-react"
+import { motion, AnimatePresence, Variants } from 'framer-motion'
 import SchoolNumberBarChart from '../../components/school-number-barchart'
 import SchoolRatingBarChart from '../../components/school-rating-barchart'
 import RatingTable from '../../components/rating-table'
+import SchoolDetailPopup from '../../components/school-detail-popup'
+import { CombinedSchool } from '../../components/rating-table';
 
 export default function RatingPage() {
+    const [selectedSchool, setSelectedSchool] = useState<CombinedSchool | null>(null);
+    const [showModal, setShowModal] = useState(false);
     const [selectedDistrict, setSelectedDistrict] = useState<string>("all")
     const [selectedRating, setSelectedRating] = useState<string>("all")
     const [searchQuery, setSearchQuery] = useState<string>("")
@@ -50,6 +54,45 @@ export default function RatingPage() {
         }
     }
 
+    const backdropVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: { duration: 0.2 },
+        },
+        exit: {
+            opacity: 0,
+            transition: { duration: 0.2 },
+        },
+    }
+
+    const modalVariants: Variants = {
+        hidden: {
+            opacity: 0,
+            scale: 0.95,
+            y: 50,
+        },
+        visible: {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            transition: {
+            type: "spring",        // ✅ valid value: "spring" | "tween" | "inertia" | "keyframes"
+            damping: 25,
+            stiffness: 300,
+            duration: 0.3          // ✅ duration can coexist with spring values
+            },
+        },
+        exit: {
+            opacity: 0,
+            scale: 0.95,
+            y: 50,
+            transition: {
+            duration: 0.2
+            },
+        },
+    };
+
     const districts = [
         "Алатауский",
         "Алмалинский",
@@ -66,6 +109,27 @@ export default function RatingPage() {
         "Средний",
         "Низкий",
     ]
+
+    const handleRowClick = (school: CombinedSchool) => {
+        setSelectedSchool(school);
+        setShowModal(true);
+    };
+
+    const getRatingInfo = (rating: number | null | undefined) => {
+        if (rating === null || rating === undefined) {
+            return { color: "text-slate-400", bgColor: "bg-slate-100", icon: Target };
+        }
+
+        // Adjust thresholds to your scale (example: 1–5)
+        if (rating >= 86) {
+            return { color: "text-emerald-600", bgColor: "bg-emerald-50", icon: Trophy }; // High
+        } else if (rating >= 85) {
+            return { color: "text-amber-600", bgColor: "bg-amber-50", icon: Star }; // Medium
+        } else {
+            return { color: "text-red-500", bgColor: "bg-red-50", icon: Target }; // Low
+        }
+    };
+
 
     return (
         <motion.div 
@@ -233,46 +297,22 @@ export default function RatingPage() {
                                     </div>
                                     </div>
                                 </motion.div>
-
-                                {/* <motion.div 
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 0.3, duration: 0.5 }}
-                                    className="space-y-4"
-                                >
-                                    <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Рейтинг школ</h3>
-                                    <motion.div className="space-y-3" variants={itemVariants}>
-                                        <div className="flex items-center justify-between p-4 bg-emerald-50 border-2 border-emerald-200 rounded-xl">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-4 h-4 bg-emerald-500 rounded-full"></div>
-                                                <span className="font-medium text-emerald-800">Высокий</span>
-                                            </div>
-                                            <span className="text-emerald-700 font-bold">51 школ</span>
-                                        </div>
-                                        <div className="flex items-center justify-between p-4 bg-amber-50 border-2 border-amber-200 rounded-xl">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-4 h-4 bg-amber-500 rounded-full"></div>
-                                                <span className="font-medium text-amber-800">Средний</span>
-                                            </div>
-                                            <span className="text-amber-700 font-bold">126 школ</span>
-                                        </div>
-                                        <div className="flex items-center justify-between p-4 bg-red-50 border-2 border-red-200 rounded-xl">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-4 h-4 bg-red-500 rounded-full"></div>
-                                                <span className="font-medium text-red-800">Низкий</span>
-                                            </div>
-                                            <span className="text-red-700 font-bold">65 школ</span>
-                                        </div>
-                                    </motion.div>
-                                </motion.div> */}
                             </motion.div> 
                             <motion.div 
                                 className="bg-white rounded-xl shadow-sm border border-slate-200 lg:col-span-2"
                                 variants={itemVariants}
                                 whileHover={cardHoverVariants.hover}
                             >
-                                <RatingTable/>
+                                <RatingTable onRowClick={handleRowClick}/>
                             </motion.div>
+                            <AnimatePresence>
+                                <SchoolDetailPopup
+                                    isOpen={showModal}
+                                    school={selectedSchool}
+                                    onClose={() => setShowModal(false)}
+                                    getRatingInfo={getRatingInfo}
+                                />
+                            </AnimatePresence>
                         </div>
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-1 lg:grid-cols-2">
                             <motion.div 
