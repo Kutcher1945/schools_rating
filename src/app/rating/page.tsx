@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { SidebarLayout } from "@/components/sidebar-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -14,12 +14,38 @@ import RatingTable from '../../components/rating-table'
 import SchoolDetailPopup from '../../components/school-detail-popup'
 import { CombinedSchool } from '../../components/rating-table';
 
+interface DistrictData {
+  district: string
+  count: number
+  high: number
+  medium: number
+  low: number
+}
+
+interface Totals {
+  high: number
+  medium: number
+  low: number
+}
+
+interface RatingApiItem {
+  district: string
+  count: number
+  rating?: {
+    high: number
+    medium: number
+    low: number
+  }
+}
+
 export default function RatingPage() {
     const [selectedSchool, setSelectedSchool] = useState<CombinedSchool | null>(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedDistrict, setSelectedDistrict] = useState<string>("all")
     const [selectedRating, setSelectedRating] = useState<string>("all")
     const [searchQuery, setSearchQuery] = useState<string>("")
+    const [data, setData] = useState<DistrictData[]>([])
+    const [totals, setTotals] = useState<Totals>({ high: 0, medium: 0, low: 0,})
     const containerVariants = {
         hidden: { opacity: 0 }, 
         visible: { 
@@ -77,10 +103,10 @@ export default function RatingPage() {
             scale: 1,
             y: 0,
             transition: {
-            type: "spring",        // ✅ valid value: "spring" | "tween" | "inertia" | "keyframes"
+            type: "spring",
             damping: 25,
             stiffness: 300,
-            duration: 0.3          // ✅ duration can coexist with spring values
+            duration: 0.3
             },
         },
         exit: {
@@ -94,14 +120,14 @@ export default function RatingPage() {
     };
 
     const districts = [
-        "Алатауский",
-        "Алмалинский",
-        "Ауэзовский",
-        "Бостандыкский",
-        "Жетысуский",
-        "Медеуский",
-        "Наурызбайский",
-        "Турксибский",
+        "Алатауский район",
+        "Алмалинский район",
+        "Ауэзовский район",
+        "Бостандыкский район",
+        "Жетысуский район",
+        "Медеуский район",
+        "Наурызбайский район",
+        "Турксибский район",
     ]
 
     const ratings = [
@@ -120,7 +146,6 @@ export default function RatingPage() {
             return { color: "text-slate-400", bgColor: "bg-slate-100", icon: Target };
         }
 
-        // Adjust thresholds to your scale (example: 1–5)
         if (rating >= 86) {
             return { color: "text-emerald-600", bgColor: "bg-emerald-50", icon: Trophy }; // High
         } else if (rating >= 85) {
@@ -129,6 +154,48 @@ export default function RatingPage() {
             return { color: "text-red-500", bgColor: "bg-red-50", icon: Target }; // Low
         }
     };
+    
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+            const response = await fetch("https://admin.smartalmaty.kz/api/v1/institutions_monitoring/schools/rating-by-district/")
+            if (!response.ok) {
+                throw new Error(`Ошибка: ${response.status}`)
+            }
+            const result = await response.json()
+
+            const formatted = result.map((item: RatingApiItem) => ({
+                district: item.district,
+                count: item.count,
+                high: item.rating?.high ?? 0,
+                medium: item.rating?.medium ?? 0,
+                low: item.rating?.low ?? 0,
+            }))
+
+            setData(formatted)
+
+            const sum = formatted.reduce(
+                (acc: Totals, curr: DistrictData): Totals => {
+                    acc.high += curr.high
+                    acc.medium += curr.medium
+                    acc.low += curr.low
+                    return acc
+                },
+                { high: 0, medium: 0, low: 0 }
+            )
+
+            setTotals(sum)
+            } catch (err: unknown) {
+                if (err instanceof Error) {
+                    console.error(err.message)
+                } else {
+                    console.error("Unexpected error", err)
+                }
+            }
+        }
+
+        fetchData()
+    }, [])
 
 
     return (
@@ -185,7 +252,7 @@ export default function RatingPage() {
                                     </div>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-2xl font-bold text-emerald-700 mb-1">51 школ</div>
+                                    <div className="text-2xl font-bold text-emerald-700 mb-1">{totals.high} школ</div>
                                     <p className="text-emerald-600 text-sm">Отличные показатели</p>
                                 </CardContent>
                             </Card>
@@ -203,7 +270,7 @@ export default function RatingPage() {
                                     </div>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-2xl font-bold text-amber-700 mb-1">126 школ</div>
+                                    <div className="text-2xl font-bold text-amber-700 mb-1">{totals.medium} школ</div>
                                     <p className="text-amber-600 text-sm">Хорошие показатели</p>
                                 </CardContent>
                             </Card>
@@ -221,7 +288,7 @@ export default function RatingPage() {
                                     </div>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-2xl font-bold text-red-700 mb-1">65 школ</div>
+                                    <div className="text-2xl font-bold text-red-700 mb-1">{totals.low} школ</div>
                                     <p className="text-red-600 text-sm">Требуют внимания</p>
                                 </CardContent>
                             </Card>
@@ -303,7 +370,12 @@ export default function RatingPage() {
                                 variants={itemVariants}
                                 whileHover={cardHoverVariants.hover}
                             >
-                                <RatingTable onRowClick={handleRowClick}/>
+                                <RatingTable 
+                                    onRowClick={handleRowClick} 
+                                    selectedDistrict={selectedDistrict}
+                                    searchQuery={searchQuery}
+                                    selectedRating={selectedRating}
+                                />
                             </motion.div>
                             <AnimatePresence>
                                 <SchoolDetailPopup
@@ -320,14 +392,14 @@ export default function RatingPage() {
                                 variants={itemVariants}
                                 whileHover={cardHoverVariants.hover}
                             >
-                                <SchoolNumberBarChart/>
+                                <SchoolNumberBarChart data={data}/>
                             </motion.div>
                             <motion.div 
                                 className="bg-white rounded-xl shadow-sm border border-slate-200 p-2 h-full"
                                 variants={itemVariants}
                                 whileHover={cardHoverVariants.hover}
                             >
-                                <SchoolRatingBarChart/>
+                                <SchoolRatingBarChart data={data}/>
                             </motion.div>
                         </div>
                     </motion.div>

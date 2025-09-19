@@ -1,19 +1,16 @@
 "use client"
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  LabelList, 
+  ResponsiveContainer 
+} from "recharts"
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LabelList, ResponsiveContainer } from "recharts"
-
-const data = [
-  { district: "Турксибский", schools: 55 },
-  { district: "Бостандыкский", schools: 40 },
-  { district: "Наурызбайский", schools: 37 },
-  { district: "Жетысуский", schools: 36 },
-  { district: "Алмалинский", schools: 25 },
-  { district: "Ауэзовский", schools: 19 },
-  { district: "Медеуский", schools: 13 },
-  { district: "Алатауский", schools: 10 },
-]
-
-export default function SchoolNumberBarChart() {
+export default function SchoolNumberBarChart({data}: {data: { district: string; count: number; high:number; medium:number; low:number}[]}) {
   return (
     <div className="w-full h-[450px] p-2 pb-5">
       <h2 className="text-center text-lg font-semibold mb-4 text-black">Количество школ по районам</h2>
@@ -27,8 +24,8 @@ export default function SchoolNumberBarChart() {
           <XAxis type="number"/>
           <YAxis type="category" dataKey="district"  />
           <Tooltip />
-          <Bar dataKey="schools" fill="#2563eb" radius={[0, 6, 6, 0]}>
-            <LabelList dataKey="schools" position="right" />
+          <Bar dataKey="count" fill="#2563eb" radius={[0, 6, 6, 0]}>
+            <LabelList dataKey="count" position="right" />
           </Bar>
         </BarChart>
       </ResponsiveContainer>

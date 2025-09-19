@@ -22,33 +22,34 @@ interface AnalyzeItem {
   digital_rating: number;
 }
 
-// Fix: omit `id` from AnalyzeItem so `id` from SchoolApiItem stays authoritative.
-// Make other analyze fields optional because not every school may have analyze data.
 export type CombinedSchool = SchoolApiItem & Partial<Omit<AnalyzeItem, 'id'>>;
 
 interface RatingTableProps {
   onRowClick: (school: CombinedSchool) => void;
+  selectedDistrict?: string;
+  searchQuery?: string;
+  selectedRating?: string;
 }
 
-export default function RatingTable({ onRowClick }: RatingTableProps) {
+export default function RatingTable({ onRowClick, selectedDistrict, searchQuery, selectedRating }: RatingTableProps) {
   const [schools, setSchools] = useState<CombinedSchool[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedSchool, setSelectedSchool] = useState<CombinedSchool | null>(null);
-  const [showModal, setShowModal] = useState(false);
-  const itemsPerPage = 100; // you used 100 in your snippet
+  const itemsPerPage = 100; 
 
   useEffect(() => {
+    const districtFilter = !selectedDistrict || selectedDistrict === "all" ? "" : selectedDistrict
+    // const ratingFilter = !selectedRating || selectedRating === "all" ? "" : selectedRating.toLowerCase();
     const fetchData = async () => {
       try {
         const offset = (currentPage - 1) * itemsPerPage;
 
         const [res1, res2] = await Promise.all([
           fetch(
-            `https://admin.smartalmaty.kz/api/v1/institutions_monitoring/schools/?limit=${itemsPerPage}&offset=${offset}`
+            `https://admin.smartalmaty.kz/api/v1/institutions_monitoring/schools/?limit=${itemsPerPage}&offset=${offset}&district=${districtFilter}&search=${searchQuery}`
           ),
           fetch(
-            `https://admin.smartalmaty.kz/api/v1/institutions_monitoring/schools/analyze/?limit=${itemsPerPage}&offset=${offset}`
+            `https://admin.smartalmaty.kz/api/v1/institutions_monitoring/schools/analyze/?limit=${itemsPerPage}&offset=${offset}&district=${districtFilter}`
           ),
         ]);
 
@@ -71,7 +72,7 @@ export default function RatingTable({ onRowClick }: RatingTableProps) {
     };
 
     fetchData();
-  }, [currentPage]);
+  }, [currentPage, selectedDistrict, searchQuery]);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / itemsPerPage));
 
@@ -81,8 +82,6 @@ export default function RatingTable({ onRowClick }: RatingTableProps) {
     if (rating >= 3.0) return <span className="bg-yellow-400 font-semibold px-2 py-1 rounded-md">{rating}</span>;
     return <span className="bg-red-400 font-semibold px-2 py-1 rounded-md">{rating}</span>;
   }
-
-  const formatScore = (v?: number) => (v === undefined || v === null ? '—' : `${v.toFixed(2)}%`);
 
   const getColoredPercentage = (value?: number) => {
     if (value === undefined || value === null) 
@@ -103,10 +102,10 @@ export default function RatingTable({ onRowClick }: RatingTableProps) {
     );
   };
 
+  // Exporting current page to Excel
   const exportToExcel = () => {
     if (!schools.length) return;
 
-    // 1. Convert your data to a plain array of objects
     const rows = schools.map((s) => ({
       Наименование: s.name_of_the_organization,
       Район: s.district,
@@ -120,15 +119,15 @@ export default function RatingTable({ onRowClick }: RatingTableProps) {
       'Общий рейтинг': s.digital_rating ?? '',
     }));
 
-    // 2. Create a worksheet and workbook
+    // Creating a worksheet and workbook
     const worksheet = XLSX.utils.json_to_sheet(rows);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Schools');
 
-    // 3. Write the workbook to binary array
+    //Writing the workbook to binary array
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
 
-    // 4. Save it using FileSaver
+    // Saving it using FileSaver
     const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
     saveAs(data, `schools_page${currentPage}.xlsx`);
   };
@@ -136,7 +135,7 @@ export default function RatingTable({ onRowClick }: RatingTableProps) {
   const exportAllToExcel = async () => {
     try {
       const allSchools: CombinedSchool[] = [];
-      const itemsPerPage = 100; // same as your table pagination
+      const itemsPerPage = 100;
       let offset = 0;
 
       while (true) {
@@ -158,12 +157,10 @@ export default function RatingTable({ onRowClick }: RatingTableProps) {
 
         allSchools.push(...merged);
 
-        // Stop when we've fetched all pages
         offset += itemsPerPage;
         if (offset >= data1.count) break;
       }
 
-      // Convert to worksheet-friendly format
       const rows = allSchools.map((s) => ({
         Наименование: s.name_of_the_organization,
         Район: s.district,
@@ -209,7 +206,6 @@ export default function RatingTable({ onRowClick }: RatingTableProps) {
                 Общий рейтинг
               </th>
 
-              {/* New columns from analyze API */}
               <th className="px-4 py-3 text-center text-xs font-semibold text-slate-600 uppercase border-b border-slate-200">
                 Качество знаний
               </th>
