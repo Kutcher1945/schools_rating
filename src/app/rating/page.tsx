@@ -26,6 +26,10 @@ interface Totals {
   high: number
   medium: number
   low: number
+  highPct?: number
+  mediumPct?: number
+  lowPct?: number
+
 }
 
 interface RatingApiItem {
@@ -184,7 +188,15 @@ export default function RatingPage() {
                 { high: 0, medium: 0, low: 0 }
             )
 
-            setTotals(sum)
+            const totalRatings = sum.high + sum.medium + sum.low
+            const percentages: Totals = {
+                ...sum,
+                highPct: totalRatings ? ((sum.high / totalRatings) * 100).toFixed(2) : 0,
+                mediumPct: totalRatings ? ((sum.medium / totalRatings) * 100).toFixed(2) : 0,
+                lowPct: totalRatings ? ((sum.low / totalRatings) * 100).toFixed(2) : 0,
+            }
+
+            setTotals(percentages)
             } catch (err: unknown) {
                 if (err instanceof Error) {
                     console.error(err.message)
@@ -252,8 +264,13 @@ export default function RatingPage() {
                                     </div>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-2xl font-bold text-emerald-700 mb-1">{totals.high} школ</div>
-                                    <p className="text-emerald-600 text-sm">Отличные показатели</p>
+                                    <div className="flex items-center justify-between gap-2">
+                                        <div>
+                                            <div className="text-2xl font-bold text-emerald-700 mb-1">{totals.high} школ</div>    
+                                            <p className="text-emerald-600 text-sm">Отличные показатели</p>
+                                        </div>
+                                        <div className="text-xl font-bold text-emerald-700 mb-1">{totals.highPct}%</div>    
+                                    </div>
                                 </CardContent>
                             </Card>
 
@@ -270,8 +287,13 @@ export default function RatingPage() {
                                     </div>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-2xl font-bold text-amber-700 mb-1">{totals.medium} школ</div>
-                                    <p className="text-amber-600 text-sm">Хорошие показатели</p>
+                                    <div className="flex items-center justify-between gap-2">
+                                        <div>
+                                            <div className="text-2xl font-bold text-amber-700 mb-1">{totals.medium} школ</div>
+                                            <p className="text-amber-600 text-sm">Хорошие показатели</p>
+                                        </div>
+                                        <div className="text-xl font-bold text-amber-700 mb-1">{totals.mediumPct}%</div>  
+                                    </div>
                                 </CardContent>
                             </Card>
 
@@ -288,8 +310,13 @@ export default function RatingPage() {
                                     </div>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-2xl font-bold text-red-700 mb-1">{totals.low} школ</div>
-                                    <p className="text-red-600 text-sm">Требуют внимания</p>
+                                    <div className="flex items-center justify-between gap-2">
+                                        <div>
+                                            <div className="text-2xl font-bold text-red-700 mb-1">{totals.low} школ</div>
+                                            <p className="text-red-600 text-sm">Требуют внимания</p>
+                                        </div>
+                                        <div className="text-xl font-bold text-red-700 mb-1">{totals.lowPct}%</div> 
+                                    </div>
                                 </CardContent>
                             </Card>
                         </div>
